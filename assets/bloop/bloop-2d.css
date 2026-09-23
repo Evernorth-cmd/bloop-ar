@@ -23,3 +23,14 @@
 @keyframes bloop-play{from{transform:translateX(-3px) rotate(-3deg)}to{transform:translateX(4px) rotate(3deg)}}
 [data-bloop-state="train_zoom"] .bloop-2d-sprite{animation:bloop-zoom .16s linear infinite alternate}
 @keyframes bloop-zoom{from{transform:translateX(-5px) skewX(-3deg)}to{transform:translateX(6px) skewX(3deg)}}
+
+
+/* Interaction-specific physical accents */
+[data-bloop-state="mouse_found"] .bloop-2d-sprite{animation:bloop-reach .5s cubic-bezier(.2,.9,.2,1) infinite alternate}
+@keyframes bloop-reach{from{transform:translateX(-2px) rotate(-2deg)}to{transform:translateX(6px) rotate(4deg)}}
+[data-bloop-state="typing"] .bloop-2d-sprite{animation:bloop-type .16s ease-in-out infinite alternate}
+@keyframes bloop-type{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-3px) rotate(1deg)}}
+[data-bloop-state="train_zoom"] .bloop-2d-sprite{animation:bloop-sprint .12s linear infinite alternate}
+@keyframes bloop-sprint{from{transform:translateX(-6px) skewX(-4deg)}to{transform:translateX(7px) skewX(4deg)}}
+[data-bloop-state="celebrate"] .bloop-2d-sprite{animation:bloop-celeb .3s cubic-bezier(.2,.9,.2,1) infinite alternate}
+@keyframes bloop-celeb{from{transform:translateY(0) scale(1)}to{transform:translateY(-7px) scale(1.045)}}
