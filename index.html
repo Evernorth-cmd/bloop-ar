@@ -294,7 +294,12 @@
     word-break: break-word;
   }
 </style>
-<link rel="stylesheet" href="./assets/bloop/bloop-2d.css">\n  <link rel="stylesheet" href="./assets/bloop/bloop-morph.css">
+<link rel="stylesheet" href="./assets/bloop/bloop-2d.css">
+<style>
+.dex-replay{margin-top:7px;border:0;border-radius:999px;padding:5px 10px;background:rgba(255,255,255,.78);font:inherit;font-size:.72rem;font-weight:700;cursor:pointer}
+.dex-replay:active{transform:scale(.96)}
+.dex-item{position:relative}
+</style>\n  <link rel="stylesheet" href="./assets/bloop/bloop-morph.css">
 </head>
 <body>
 <div id="debug-log"></div>
@@ -504,7 +509,16 @@
     const entries = Object.entries(discoveries).sort((a,b)=>(b[1].firstSeen||0)-(a[1].firstSeen||0));
     const countEl=document.getElementById("dex-count"); if(countEl) countEl.textContent=entries.length+" discovered";
     dexList.innerHTML = entries.length
-      ? entries.map(([name,d])=>{const info=DISCOVERY_INFO[d.form]||DISCOVERY_INFO.blob;return `<div class="dex-item"><b>${info[0]} ${name}</b><span><strong>${info[1]}</strong> · ${info[2]}</span></div>`}).join('')
+      ? entries.map(([name,d])=>{
+          const info=DISCOVERY_INFO[d.form]||DISCOVERY_INFO.blob;
+          const safeName=String(name).replace(/[^a-zA-Z0-9 _-]/g,'').trim();
+          const safeForm=String(d.form||'blob').replace(/[^a-zA-Z0-9_-]/g,'');
+          return `<div class="dex-item" data-dex-form="${safeForm}" data-dex-name="${safeName}">
+            <b>${info[0]} ${name}</b>
+            <span><strong>${info[1]}</strong> · ${info[2]}</span>
+            <button class="dex-replay" type="button" aria-label="Replay ${safeName}">▶ Replay</button>
+          </div>`;
+        }).join('')
       : `<div class="dex-item" style="grid-column:1/-1"><b>No discoveries yet</b><span>Point Bloop at something and tap Scan.</span></div>`;
   }
   document.getElementById('dex-btn').addEventListener('click', () => {
@@ -513,7 +527,18 @@
   document.getElementById('dex-close').addEventListener('click', () => {
     dex.classList.remove('open'); dex.setAttribute('aria-hidden','true');
   });
-  dex.addEventListener('click', e => { if (e.target === dex) dex.classList.remove('open'); });
+  dex.addEventListener('click', e => {
+    if (e.target === dex) { dex.classList.remove('open'); return; }
+    const replay=e.target.closest('.dex-replay');
+    if(!replay) return;
+    const item=replay.closest('.dex-item');
+    if(!item) return;
+    const form=item.dataset.dexForm||'blob';
+    const name=item.dataset.dexName||'object';
+    const message=formLines[form]||('✨ Bloop replaying '+name+'!');
+    bloop2d.react(form,message);
+    say(message,2800);
+  });
 
   /* ---------------- Bloop 2D renderer + object detection ---------------- */
   const bloopHost=document.getElementById('bloop-character'),bloop2d=new Bloop2D(bloopHost,'./assets/bloop/');
