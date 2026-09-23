@@ -87,3 +87,13 @@
 @keyframes bloop-tv-settle{0%{transform:translateY(12px) scale(.72,1.15) rotate(-5deg)}40%{transform:translateY(-5px) scale(.9,1.04) rotate(4deg)}70%{transform:translateY(3px) scale(.82,1.08) rotate(-2deg)}100%{transform:translateY(0) scale(.86,1.04) rotate(0)}}
 .bloop-2d-host.bloop-object-attached[data-bloop-object-kind="teddy"] .bloop-2d-sprite{animation:bloop-teddy-settle .9s cubic-bezier(.2,.8,.2,1) 1 forwards}
 @keyframes bloop-teddy-settle{0%{transform:translateY(10px) scale(.86,.94)}45%{transform:translateY(-4px) scale(1.06,1.08)}70%{transform:translateY(2px) scale(.98,1.02)}100%{transform:translateY(0) scale(1)}}
+
+/* Mouse + laptop physical personalities */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"] .bloop-2d-sprite{animation:bloop-mouse-pounce .82s cubic-bezier(.18,.82,.22,1) 1 forwards}
+@keyframes bloop-mouse-pounce{0%{transform:translate(-22px,10px) scale(.72,.88) rotate(-12deg)}25%{transform:translate(-8px,-8px) scale(1.08,.82) rotate(8deg)}48%{transform:translate(10px,3px) scale(.84,1.08) rotate(-5deg)}70%{transform:translate(2px,-3px) scale(1.02,.9) rotate(3deg)}100%{transform:translate(0) scale(.92,1) rotate(0)}}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="laptop"] .bloop-2d-sprite{animation:bloop-laptop-type .9s ease-in-out infinite alternate}
+@keyframes bloop-laptop-type{from{transform:translateY(3px) scale(.96,1) rotate(-1deg)}to{transform:translateY(-3px) scale(1.02,.97) rotate(1deg)}}
+[data-bloop-state="typing"] .bloop-2d-sprite{animation:bloop-type-bounce .22s ease-in-out infinite alternate}
+@keyframes bloop-type-bounce{from{transform:translateY(1px) scale(.99,1)}to{transform:translateY(-2px) scale(1.01,.98)}}
+[data-bloop-state="mouse_play"] .bloop-2d-sprite{animation:bloop-mouse-play .32s cubic-bezier(.2,.8,.2,1) infinite alternate}
+@keyframes bloop-mouse-play{from{transform:translateX(-5px) rotate(-4deg) scale(.95)}to{transform:translateX(6px) rotate(4deg) scale(1.02)}}
