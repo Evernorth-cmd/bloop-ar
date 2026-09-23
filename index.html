@@ -368,7 +368,7 @@
   <div id="caption">Hi, I'm Bloop. Point me at something and tap <b>Scan</b>.</div>
 </div>
 
-<div id="controls">
+<div id="controls" style="z-index:2147483647;">
   <div id="form-row" aria-label="Bloop interactions">
     <button class="form-btn active" data-form="blob" title="Bloop">🟠</button>
     <button class="form-btn" data-form="train" title="Zoom with vehicles">🚗</button>
@@ -484,6 +484,8 @@
   /* ---------------- Interaction buttons ---------------- */
   // Attached immediately so taps are never silently dead even if the 3D scene fails below.
   document.querySelectorAll('.form-btn').forEach(btn => {
+    btn.disabled = false;
+    btn.removeAttribute('disabled');
     btn.addEventListener('click', () => {
       if (window.__bloopMorphTo) {
         window.__bloopMorphReq(btn.dataset.form);
@@ -492,6 +494,8 @@
       }
     });
   });
+  document.getElementById('scan-btn').disabled = false;
+  document.getElementById('scan-btn').removeAttribute('disabled');
   document.getElementById('scan-btn').addEventListener('click', () => {
     if (window.__bloopScan) window.__bloopScan();
     else logError('scan ignored', '3D scene never finished initializing — see errors above.');
@@ -506,6 +510,11 @@
   window.addEventListener('bloop-camera-ready', () => {
     cameraReady = true;
     setStatus('ready', 'ready');
+    permOverlay.classList.add('hidden');
+    document.documentElement.dataset.bloopCameraReady = '1';
+    document.querySelectorAll('.form-btn').forEach(btn => { btn.disabled = false; btn.removeAttribute('disabled'); });
+    const scan = document.getElementById('scan-btn');
+    if (scan) { scan.disabled = false; scan.removeAttribute('disabled'); }
   });
 
   function explainError(err) {
