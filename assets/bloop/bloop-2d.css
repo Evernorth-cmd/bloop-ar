@@ -68,3 +68,12 @@
 .bloop-2d-host.bloop-object-attached{left:var(--bloop-object-x,50%);bottom:auto;top:var(--bloop-object-y,70%);width:min(var(--bloop-transform-w,var(--bloop-object-w,150px)),42vw);height:min(var(--bloop-transform-h,var(--bloop-object-h,150px)),42vw);transform:translate(-50%,-50%) scale(var(--bloop-object-scale,1));z-index:7}
 .bloop-2d-host.bloop-object-attached.bloop-following{transform:translate(-50%,-50%)}
 @media(prefers-reduced-motion:reduce){.bloop-2d-host.bloop-object-attached{transition:none}}
+
+/* Object-specific physical placement. */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"]{transform:translate(-50%,-50%) translateY(calc((var(--bloop-object-h,150px) * (var(--bloop-object-anchor-y,.5) - .5))))}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"] .bloop-2d-sprite{transform-origin:50% 75%}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"]{z-index:8}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="tv"]{transform:translate(-50%,-50%) translateY(calc((var(--bloop-object-h,150px) * (var(--bloop-object-anchor-y,.5) - .5))))}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"]{z-index:9;width:min(var(--bloop-transform-w,110px),28vw);height:min(var(--bloop-transform-h,110px),28vw)}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"] .bloop-2d-sprite{transform-origin:50% 92%}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="teddy"] .bloop-2d-sprite{transform-origin:50% 86%}
