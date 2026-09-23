@@ -15,3 +15,11 @@
 .bloop-2d-host.bloop-chasing .bloop-2d-sprite{animation:bloop-chase-bounce .16s ease-in-out infinite alternate}
 @keyframes bloop-chase-bounce{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-6px) rotate(3deg)}}
 @media(prefers-reduced-motion:reduce){.bloop-2d-host.bloop-chasing{animation:none}.bloop-2d-host.bloop-chasing .bloop-2d-sprite{animation:none}}
+
+/* Object personality accents */
+[data-bloop-state="typing"] .bloop-2d-sprite{animation:bloop-type .18s ease-in-out infinite alternate}
+@keyframes bloop-type{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-3px) rotate(1deg)}}
+[data-bloop-state="mouse_play"] .bloop-2d-sprite{animation:bloop-play .42s ease-in-out infinite alternate}
+@keyframes bloop-play{from{transform:translateX(-3px) rotate(-3deg)}to{transform:translateX(4px) rotate(3deg)}}
+[data-bloop-state="train_zoom"] .bloop-2d-sprite{animation:bloop-zoom .16s linear infinite alternate}
+@keyframes bloop-zoom{from{transform:translateX(-5px) skewX(-3deg)}to{transform:translateX(6px) skewX(3deg)}}
