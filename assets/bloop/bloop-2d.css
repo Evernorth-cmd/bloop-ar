@@ -291,3 +291,42 @@
 #bloop-toast span{display:block;font-size:.76rem;margin-top:2px}
 #bloop-toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
 @media(prefers-reduced-motion:reduce){#bloop-toast{transition:none}}
+
+
+/* Interaction architecture: one dedicated transform personality layer.
+   Object-specific rules below this point intentionally own the active sprite
+   animation so older generic movement rules cannot win the cascade. */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"] .bloop-2d-sprite,
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"] .bloop-2d-sprite,
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="tv"] .bloop-2d-sprite,
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="teddy"] .bloop-2d-sprite{
+  transform-origin:50% 70%;
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"] .bloop-2d-sprite{animation-name:bloop-active-cup!important}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"] .bloop-2d-sprite{animation-name:bloop-active-bottle!important}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="tv"] .bloop-2d-sprite{animation-name:bloop-active-tv!important}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="teddy"] .bloop-2d-sprite{animation-name:bloop-active-teddy!important}
+@keyframes bloop-active-cup{
+  0%,100%{transform:translateY(0) scale(.94,.98)}
+  50%{transform:translateY(2px) scale(1.02,.9)}
+}
+@keyframes bloop-active-bottle{
+  0%,100%{transform:rotate(-4deg) scale(.72,1.1)}
+  50%{transform:rotate(4deg) scale(.68,1.15)}
+}
+@keyframes bloop-active-tv{
+  0%,100%{transform:rotate(-2deg) scale(.9,1.02)}
+  50%{transform:rotate(2deg) scale(.95,.98)}
+}
+@keyframes bloop-active-teddy{
+  0%,100%{transform:translateY(1px) scale(.98)}
+  50%{transform:translateY(-3px) scale(1.04)}
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"] .bloop-2d-sprite{
+  animation-name:bloop-active-mouse!important;
+}
+@keyframes bloop-active-mouse{
+  0%{transform:translate(-8px,3px) rotate(-7deg) scale(.88,1.03)}
+  50%{transform:translate(2px,-2px) rotate(2deg) scale(1.03,.95)}
+  100%{transform:translate(10px,1px) rotate(7deg) scale(.9,1.02)}
+}
