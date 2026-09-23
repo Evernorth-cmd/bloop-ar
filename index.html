@@ -556,9 +556,14 @@
     bloopLifeTimer=setTimeout(()=>{
       if(!bloopRoamHost.classList.contains('bloop-following')&&!bloopRoamHost.classList.contains('bloop-object-attached')&&!bloopHost.classList.contains('bloop-chasing')){
         const roll=Math.random();
-        const cls=roll<.5?'bloop-fidget':roll<.8?'bloop-curious-look':'bloop-celebration-pop';
-        bloopRoamHost.classList.add(cls);
-        bloop2d.play(roll<.5?'idle':roll<.8?'curious':'excited',{next:'idle',force:true});
+        if(roll<.32){
+          bloop2d.play('blink',{next:'idle',force:true});
+        }else{
+          const cls=roll<.58?'bloop-fidget':roll<.8?'bloop-curious-look':'bloop-celebration-pop';
+          bloopRoamHost.classList.add(cls);
+          bloop2d.play(roll<.58?'idle':roll<.8?'curious':'excited',{next:'idle',force:true});
+          setTimeout(()=>bloopRoamHost.classList.remove(cls),760);
+        }
         setTimeout(()=>bloopRoamHost.classList.remove(cls),760);
       }
       scheduleBloopLife();
