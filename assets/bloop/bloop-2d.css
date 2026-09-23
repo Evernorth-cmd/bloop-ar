@@ -375,3 +375,63 @@
     animation:none!important;
   }
 }
+
+
+/* Vehicle personality: acceleration is expressed through lean, squash and
+   directional speed streaks rather than simply scaling the sprite. */
+.bloop-2d-host.bloop-vehicle-boost{
+  animation:bloop-vehicle-boost 980ms cubic-bezier(.12,.9,.2,1) both!important;
+  filter:drop-shadow(0 7px 10px rgba(255,160,40,.18));
+}
+.bloop-2d-host.bloop-vehicle-boost::before,
+.bloop-2d-host.bloop-vehicle-boost::after{
+  content:"";
+  position:absolute;
+  top:46%;
+  width:34%;
+  height:5%;
+  border-radius:999px;
+  background:currentColor;
+  opacity:0;
+  pointer-events:none;
+}
+.bloop-2d-host.bloop-vehicle-boost::before{right:86%;transform-origin:right center}
+.bloop-2d-host.bloop-vehicle-boost::after{left:86%;transform-origin:left center}
+.bloop-2d-host.bloop-vehicle-boost[data-bloop-direction="left"]::before,
+.bloop-2d-host.bloop-vehicle-boost:not([data-bloop-direction="right"])::after{
+  animation:bloop-speed-streak-left 520ms ease-out both;
+}
+.bloop-2d-host.bloop-vehicle-boost[data-bloop-direction="right"]::after,
+.bloop-2d-host.bloop-vehicle-boost[data-bloop-direction="right"]::before{
+  animation:bloop-speed-streak-right 520ms ease-out both;
+}
+@keyframes bloop-vehicle-boost{
+  0%{transform:translateX(0) scale(.92,.98) rotate(0)}
+  18%{transform:translateX(0) scale(1.08,.9) rotate(var(--bloop-motion-lean,0deg))}
+  48%{transform:translateX(calc(var(--bloop-motion-x,0px)*.55)) scale(1.12,.86) rotate(var(--bloop-motion-lean,0deg))}
+  78%{transform:translateX(calc(var(--bloop-motion-x,0px)*.2)) scale(.96,1.03) rotate(var(--bloop-motion-lean,0deg))}
+  100%{transform:translateX(0) scale(1)}
+}
+@keyframes bloop-speed-streak-left{
+  0%{opacity:0;transform:scaleX(.15)}
+  35%{opacity:.28;transform:scaleX(1)}
+  100%{opacity:0;transform:translateX(-22px) scaleX(1.35)}
+}
+@keyframes bloop-speed-streak-right{
+  0%{opacity:0;transform:scaleX(.15)}
+  35%{opacity:.28;transform:scaleX(1)}
+  100%{opacity:0;transform:translateX(22px) scaleX(1.35)}
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="train"] .bloop-2d-sprite{
+  animation:bloop-vehicle-idle 420ms ease-in-out infinite!important;
+}
+@keyframes bloop-vehicle-idle{
+  0%,100%{transform:translateY(2px) rotate(-2deg) scale(.98,1.01)}
+  50%{transform:translateY(-4px) rotate(2deg) scale(1.04,.96)}
+}
+@media (prefers-reduced-motion:reduce){
+  .bloop-2d-host.bloop-vehicle-boost{animation:none!important;filter:none}
+  .bloop-2d-host.bloop-vehicle-boost::before,
+  .bloop-2d-host.bloop-vehicle-boost::after{animation:none!important}
+  .bloop-2d-host.bloop-object-attached[data-bloop-object-kind="train"] .bloop-2d-sprite{animation:none!important}
+}
