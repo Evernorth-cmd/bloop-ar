@@ -95,3 +95,51 @@
 @media (prefers-reduced-motion:reduce){
   .bloop-morph-layer[data-morph-kind="bottle"].morph-active{animation:none;opacity:1;filter:none;transform:translate(0,1%) scale(.72,1.12)}
 }
+
+
+/* TV -> remote: compact Bloop toward the TV's remote-like silhouette,
+   keeping the face readable while the body narrows and settles. */
+.bloop-morph-layer[data-morph-kind="tv"]{
+  transform-origin:50% 86%;
+}
+.bloop-morph-layer[data-morph-kind="tv"].morph-active{
+  animation:bloop-tv-remote 860ms cubic-bezier(.2,.82,.25,1) both;
+}
+@keyframes bloop-tv-remote{
+  0%{opacity:0;filter:blur(2px);transform:translateY(-3%) scale(1.04,.98)}
+  18%{opacity:.8;filter:blur(1px);transform:translateY(1%) scale(.96,.94)}
+  40%{opacity:1;filter:blur(.2px);transform:translateY(5%) scale(.78,.9) rotate(-2deg)}
+  62%{opacity:1;filter:none;transform:translateY(9%) scale(.56,1.08) rotate(2deg)}
+  82%{opacity:1;filter:none;transform:translateY(8%) scale(.62,1.02) rotate(-1deg)}
+  100%{opacity:1;filter:none;transform:translateY(8%) scale(.6,1.04)}
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="tv"] .bloop-morph-target{
+  clip-path:inset(4% 27% 3% 27% round 28%);
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="tv"] .bloop-morph-target img{
+  transform-origin:50% 86%;
+}
+@media (prefers-reduced-motion:reduce){
+  .bloop-morph-layer[data-morph-kind="tv"].morph-active{animation:none;opacity:1;filter:none;transform:translateY(8%) scale(.6,1.04)}
+}
+
+/* Teddy: soften and widen the silhouette as Bloop settles into a cuddly form. */
+.bloop-morph-layer[data-morph-kind="teddy"]{
+  transform-origin:50% 58%;
+}
+.bloop-morph-layer[data-morph-kind="teddy"].morph-active{
+  animation:bloop-teddy-cuddle 820ms cubic-bezier(.2,.8,.25,1) both;
+}
+@keyframes bloop-teddy-cuddle{
+  0%{opacity:0;filter:blur(2px);transform:translateY(2%) scale(.92)}
+  25%{opacity:.85;filter:blur(.7px);transform:translateY(-1%) scale(1.04,.94)}
+  55%{opacity:1;filter:none;transform:translateY(1%) scale(1.1,.98)}
+  78%{transform:translateY(-2%) scale(.98,1.05) rotate(-2deg)}
+  100%{opacity:1;filter:none;transform:translateY(0) scale(1.02)}
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="teddy"] .bloop-morph-target{
+  clip-path:ellipse(47% 49% at 50% 58%);
+}
+@media (prefers-reduced-motion:reduce){
+  .bloop-morph-layer[data-morph-kind="teddy"].morph-active{animation:none;opacity:1;filter:none;transform:translateY(0) scale(1.02)}
+}
