@@ -133,3 +133,12 @@
 /* Hide the transition flash and make the handoff feel like one continuous motion. */
 [data-bloop-state$="_transform"] .bloop-2d-sprite{filter:drop-shadow(0 8px 10px rgba(0,0,0,.08));}
 [data-bloop-state$="_melt"] .bloop-2d-sprite{filter:blur(.2px) drop-shadow(0 8px 10px rgba(0,0,0,.08));}
+
+/* Live target response: Bloop leans into moving objects and quickly re-centers. */
+.bloop-2d-host.bloop-object-moving .bloop-2d-sprite{animation:bloop-follow-lean .34s cubic-bezier(.18,.82,.22,1) infinite alternate;}
+@keyframes bloop-follow-lean{0%{transform:translateX(-3px) rotate(-2deg) scale(.98,1.02)}100%{transform:translateX(5px) rotate(3deg) scale(1.03,.97)}}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"].bloop-object-moving .bloop-2d-sprite{animation:bloop-mouse-track .24s ease-in-out infinite alternate}
+@keyframes bloop-mouse-track{from{transform:translateX(-7px) rotate(-5deg) scale(.9,1.02)}to{transform:translateX(8px) rotate(5deg) scale(1.02,.94)}}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"].bloop-object-moving .bloop-2d-sprite{animation:bloop-snake-track .3s ease-in-out infinite alternate}
+@keyframes bloop-snake-track{from{transform:translateX(-4px) rotate(-4deg) scale(.72,1.12)}to{transform:translateX(5px) rotate(5deg) scale(.7,1.18)}}
+@media(prefers-reduced-motion:reduce){.bloop-2d-host.bloop-object-moving .bloop-2d-sprite{animation:none}}
