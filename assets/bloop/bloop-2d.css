@@ -164,3 +164,45 @@
 .bloop-2d-host.bloop-object-attached[data-bloop-object-kind="teddy"]{padding:0 3%;}
 /* A tiny contact shadow makes the transformed companion read as attached to the target. */
 .bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"]::after,.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"]::after{content:"";position:absolute;left:18%;right:18%;bottom:8%;height:12%;border-radius:50%;background:rgba(65,35,18,.16);filter:blur(4px);z-index:0;pointer-events:none;}
+
+
+/* Motion personality: Bloop reacts to the target's movement instead of only following its center. */
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="cup"] .bloop-2d-sprite{
+  animation:bloop-cup-cling .42s cubic-bezier(.18,.82,.22,1) infinite alternate!important;
+}
+@keyframes bloop-cup-cling{
+  from{transform:translate(-3px,-1px) rotate(-3deg) scale(.9,.98)}
+  to{transform:translate(4px,2px) rotate(4deg) scale(.96,.92)}
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="bottle"] .bloop-2d-sprite{
+  animation:bloop-bottle-sway .28s ease-in-out infinite alternate!important;
+}
+@keyframes bloop-bottle-sway{
+  from{transform:rotate(-9deg) skewY(-2deg) scale(.72,1.12)}
+  to{transform:rotate(9deg) skewY(2deg) scale(.7,1.16)}
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="tv"] .bloop-2d-sprite{
+  animation:bloop-remote-jolt .34s cubic-bezier(.2,.8,.2,1) infinite alternate!important;
+}
+@keyframes bloop-remote-jolt{
+  from{transform:translateX(-3px) rotate(-3deg) scale(.88,1.02)}
+  to{transform:translateX(4px) rotate(3deg) scale(.94,1)}
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="teddy"] .bloop-2d-sprite{
+  animation:bloop-teddy-cling .38s cubic-bezier(.2,.9,.2,1) infinite alternate!important;
+}
+@keyframes bloop-teddy-cling{
+  from{transform:translateY(2px) rotate(-3deg) scale(.97)}
+  to{transform:translateY(-4px) rotate(3deg) scale(1.03)}
+}
+/* Fast-moving mouse: Bloop springs toward the side the target is traveling toward. */
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="mouse"] .bloop-2d-sprite{
+  animation:bloop-mouse-pounce-track .22s cubic-bezier(.12,.9,.18,1) infinite alternate!important;
+}
+@keyframes bloop-mouse-pounce-track{
+  from{transform:translate(-9px,3px) rotate(-7deg) scale(.86,1.04)}
+  to{transform:translate(10px,-3px) rotate(7deg) scale(1.04,.92)}
+}
+@media(prefers-reduced-motion:reduce){
+  .bloop-2d-host.bloop-object-moving[data-bloop-object-kind] .bloop-2d-sprite{animation:none!important}
+}
