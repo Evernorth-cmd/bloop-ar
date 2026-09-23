@@ -299,6 +299,13 @@
 .dex-replay{margin-top:7px;border:0;border-radius:999px;padding:5px 10px;background:rgba(255,255,255,.78);font:inherit;font-size:.72rem;font-weight:700;cursor:pointer}
 .dex-replay:active{transform:scale(.96)}
 .dex-item{position:relative}
+.bloop-new-discovery{animation:bloop-new-discovery-pop 620ms cubic-bezier(.2,.9,.25,1) both}
+@keyframes bloop-new-discovery-pop{
+  0%{transform:translate(-50%,10px) scale(.72);opacity:0}
+  55%{transform:translate(-50%,0) scale(1.06);opacity:1}
+  78%{transform:translate(-50%,0) scale(.97)}
+  100%{transform:translate(-50%,0) scale(1)}
+}
 </style>\n  <link rel="stylesheet" href="./assets/bloop/bloop-morph.css">
 </head>
 <body>
@@ -489,8 +496,21 @@
   }
 
   function rememberDiscovery(formName, objectName) {
-    discoveries[objectName] = { form: formName, firstSeen: Date.now() };
+    const isNew=!discoveries[objectName];
+    discoveries[objectName] = { form: formName, firstSeen: discoveries[objectName]?.firstSeen || Date.now() };
     try { localStorage.setItem(BLOOPDEX_KEY, JSON.stringify(discoveries)); } catch (_) {}
+    if(isNew) showFirstDiscoveryCelebration(objectName,formName);
+  }
+  function showFirstDiscoveryCelebration(objectName,formName){
+    const toast=document.getElementById("bloop-toast");
+    if(!toast)return;
+    const info=DISCOVERY_INFO[formName]||DISCOVERY_INFO.blob;
+    toast.innerHTML="🎉 <b>New Bloop discovery!</b><span>"+info[0]+" "+objectName+" · "+info[1]+"</span>";
+    toast.classList.remove("bloop-new-discovery");
+    void toast.offsetWidth;
+    toast.classList.add("bloop-new-discovery");
+    clearTimeout(window.__bloopToastTimer);
+    window.__bloopToastTimer=setTimeout(()=>toast.classList.remove("show","bloop-new-discovery"),2600);
   }
 
   const dex = document.getElementById('bloopdex');
