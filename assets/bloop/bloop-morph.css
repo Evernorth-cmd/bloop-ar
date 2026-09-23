@@ -43,3 +43,28 @@
 @media(prefers-reduced-motion:reduce){
  .bloop-2d-host.bloop-object-attached[data-bloop-object-kind] .bloop-morph-target{animation:none!important;opacity:1;filter:none}
 }
+
+/* Continuous cup transformation: Bloop visually sinks into the rim,
+   briefly becomes a liquid-like silhouette, then settles inside the cup. */
+.bloop-morph-layer[data-morph-kind="cup"]{
+  transform-origin:50% 96%;
+}
+.bloop-morph-layer[data-morph-kind="cup"].morph-active{
+  animation:bloop-cup-liquid 900ms cubic-bezier(.22,.8,.28,1) both;
+}
+@keyframes bloop-cup-liquid{
+  0%{opacity:0;filter:blur(2px);transform:translateY(-8%) scale(1.04,1)}
+  18%{opacity:.75;filter:blur(1px);transform:translateY(0) scale(1.03,.96)}
+  42%{opacity:1;filter:blur(.3px);transform:translateY(7%) scale(1.1,.72)}
+  68%{opacity:1;filter:none;transform:translateY(16%) scale(1.18,.5)}
+  100%{opacity:1;filter:none;transform:translateY(13%) scale(1.08,.56)}
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"] .bloop-morph-target{
+  clip-path:ellipse(48% 48% at 50% 94%);
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"] .bloop-morph-target img{
+  transform-origin:50% 96%;
+}
+@media (prefers-reduced-motion:reduce){
+  .bloop-morph-layer[data-morph-kind="cup"].morph-active{animation:none;opacity:1;filter:none;transform:translateY(10%) scale(1.08,.58)}
+}
