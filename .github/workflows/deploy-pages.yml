@@ -3,6 +3,7 @@ name: Deploy Bloop AR to GitHub Pages
 on:
   push:
     branches:
+      - main
       - feature/bloop-2d-cartoon
   workflow_dispatch:
 
