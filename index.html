@@ -495,15 +495,24 @@
       return false;
     }
   }
-  function cameraButtonPress(e) {
-    e.preventDefault();
-    e.stopPropagation();
-    if (permBtn.disabled) return;
+  // Global/capture-phase handler: keeps the camera button working even if another
+  // page layer or gesture handler interferes with normal bubbling events.
+  window.__bloopCameraTap = function(e) {
+    if (e) { e.preventDefault(); e.stopPropagation(); }
+    if (permBtn.disabled) return false;
     permBtn.textContent = 'Opening camera…';
     startCamera();
-  }
-  permBtn.addEventListener('click', cameraButtonPress);
-  permBtn.addEventListener('touchend', cameraButtonPress, { passive: false });
+    return false;
+  };
+  permBtn.addEventListener('click', window.__bloopCameraTap, true);
+  permBtn.addEventListener('pointerup', window.__bloopCameraTap, true);
+  permBtn.addEventListener('touchend', window.__bloopCameraTap, { passive: false, capture: true });
+  // Catch taps at document capture phase as a final mobile fallback.
+  document.addEventListener('pointerup', function(e) {
+    const target = e.target && e.target.closest ? e.target.closest('#perm-btn') : null;
+    if (target === permBtn) window.__bloopCameraTap(e);
+  }, true);
+
   // Do NOT auto-request on load — on iOS Safari and most in-app browsers, getUserMedia
   // silently fails without a direct user tap. Wait for the button press instead.
 
