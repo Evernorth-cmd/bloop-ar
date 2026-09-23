@@ -674,14 +674,36 @@
   });
 
   /* ---------------- Bloop 2D renderer + object detection ---------------- */
-  const bloopHost=document.getElementById('bloop-character'),bloop2d=new Bloop2D(bloopHost,'./assets/bloop/');
-  window.__bloop2d=bloop2d;
+  const bloopHost=document.getElementById('bloop-character');
+  const scanBtn=document.getElementById('scan-btn');
+  let model=null;let bloopTrackTimer=null;let bloopTrackStopTimer=null;
   const formLines={blob:"Just me, Bloop. Ready for anything.",train:"ZOOM ZOOM! Bloop found something with wheels.",laptop:"Ooh! Bloop found a laptop.",mouse:"👀 Mouse spotted! Chase mode!",cup:"🥤 Cup spotted! Slime mode!",bottle:"🍾 Bottle spotted! Snake mode!",tv:"📺 TV spotted! Remote mode!",teddy:"🧸 Person spotted! Teddy mode!"};
-  function morphTo(name,caption){document.querySelectorAll('.form-btn').forEach(b=>b.classList.toggle('active',b.dataset.form===name));bloop2d.react(name,caption||formLines[name]||'Bloop!');if(caption)say(caption,3600)}
+
+  // Never let a missing/stale sprite script kill the rest of the app.
+  // The real Bloop2D renderer is preferred; the fallback keeps Bloop visible and
+  // keeps every control usable while the sprite bundle recovers.
+  let bloop2d;
+  try{
+    if(typeof Bloop2D!=='function') throw new Error('Bloop 2D renderer did not load');
+    bloop2d=new Bloop2D(bloopHost,'./assets/bloop/');
+  }catch(e){
+    logError('Bloop renderer',e);
+    bloopHost.innerHTML='<img class="bloop-2d-sprite" src="./assets/bloop/bloop.svg" alt="Bloop">';
+    bloop2d={
+      play:()=>bloop2d,
+      react:(form,caption)=>{if(caption)say(caption,2600);return bloop2d}
+    };
+  }
+  window.__bloop2d=bloop2d;
+
+  function morphTo(name,caption){
+    document.querySelectorAll('.form-btn').forEach(b=>b.classList.toggle('active',b.dataset.form===name));
+    bloop2d.react(name,caption||formLines[name]||'Bloop!');
+    if(caption)say(caption,3600);
+  }
   window.__bloopMorphTo=true;window.__bloopMorphReq=name=>morphTo(name,formLines[name]);
   // Manual buttons preview Bloop's interaction personalities without pretending Bloop is a different character.
   // Camera scanning remains object-first and can discover additional objects automatically.
-  const scanBtn=document.getElementById('scan-btn');let model=null;let bloopTrackTimer=null;let bloopTrackStopTimer=null;
   /* Detection is object-first: the vision model identifies the thing, while Bloop stays Bloop. Only a few objects get special behavior; everything else gets a generic curious reaction. */
   const SPECIAL_REACTIONS={mouse:'mouse',laptop:'laptop',tv:'tv',cup:'cup',bottle:'bottle',person:'teddy',train:'train',bicycle:'train',motorcycle:'train',car:'train',bus:'train',truck:'train',skateboard:'train',surfboard:'train',skis:'train',snowboard:'train'};
   const REACTIONS={mouse:n=>'👀 Bloop spotted a <b>'+n+'</b>! Chase mode!',laptop:n=>'Ooh! Bloop found a <b>'+n+'</b>!',tv:n=>'📺 Bloop sees a <b>'+n+'</b> and becomes a remote!',cup:n=>'🥤 Bloop melts into the <b>'+n+'</b> like slime!',bottle:n=>'🍾 Bloop wraps around the <b>'+n+'</b> like a snake!',teddy:n=>'🧸 Bloop sees a <b>'+n+'</b> and turns into a teddy bear!',train:n=>'👀 <b>'+n+'</b>! Bloop goes ZOOM ZOOM!'};
