@@ -206,3 +206,48 @@
 @media(prefers-reduced-motion:reduce){
   .bloop-2d-host.bloop-object-moving[data-bloop-object-kind] .bloop-2d-sprite{animation:none!important}
 }
+
+
+/* Direction-aware tracking: the companion leans into the object's real motion. */
+.bloop-2d-host.bloop-object-moving .bloop-2d-sprite{
+  --bloop-motion-x:0px;
+  --bloop-motion-y:0px;
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="cup"] .bloop-2d-sprite{
+  animation-name:bloop-cup-follow-direction!important;
+}
+@keyframes bloop-cup-follow-direction{
+  from{transform:translate(calc(-3px + var(--bloop-motion-x)*.18),calc(-1px + var(--bloop-motion-y)*.10)) rotate(calc(-3deg + var(--bloop-motion-lean))) scale(.9,.98)}
+  to{transform:translate(calc(4px + var(--bloop-motion-x)*.18),calc(2px + var(--bloop-motion-y)*.10)) rotate(calc(4deg + var(--bloop-motion-lean))) scale(.96,.92)}
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="bottle"] .bloop-2d-sprite{
+  animation-name:bloop-bottle-follow-direction!important;
+}
+@keyframes bloop-bottle-follow-direction{
+  from{transform:translateX(calc(-2px + var(--bloop-motion-x)*.22)) rotate(calc(-9deg + var(--bloop-motion-lean))) skewY(-2deg) scale(.72,1.12)}
+  to{transform:translateX(calc(3px + var(--bloop-motion-x)*.22)) rotate(calc(9deg + var(--bloop-motion-lean))) skewY(2deg) scale(.7,1.16)}
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="tv"] .bloop-2d-sprite{
+  animation-name:bloop-remote-follow-direction!important;
+}
+@keyframes bloop-remote-follow-direction{
+  from{transform:translate(calc(-3px + var(--bloop-motion-x)*.16),calc(var(--bloop-motion-y)*.08)) rotate(calc(-3deg + var(--bloop-motion-lean))) scale(.88,1.02)}
+  to{transform:translate(calc(4px + var(--bloop-motion-x)*.16),calc(var(--bloop-motion-y)*.08)) rotate(calc(3deg + var(--bloop-motion-lean))) scale(.94,1)}
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="teddy"] .bloop-2d-sprite{
+  animation-name:bloop-teddy-follow-direction!important;
+}
+@keyframes bloop-teddy-follow-direction{
+  from{transform:translate(calc(var(--bloop-motion-x)*.12),calc(2px + var(--bloop-motion-y)*.10)) rotate(calc(-3deg + var(--bloop-motion-lean))) scale(.97)}
+  to{transform:translate(calc(var(--bloop-motion-x)*.12),calc(-4px + var(--bloop-motion-y)*.10)) rotate(calc(3deg + var(--bloop-motion-lean))) scale(1.03)}
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="mouse"] .bloop-2d-sprite{
+  animation-name:bloop-mouse-follow-direction!important;
+}
+@keyframes bloop-mouse-follow-direction{
+  from{transform:translate(calc(-9px + var(--bloop-motion-x)*.35),calc(3px + var(--bloop-motion-y)*.18)) rotate(calc(-7deg + var(--bloop-motion-lean)*1.2)) scale(.86,1.04)}
+  to{transform:translate(calc(10px + var(--bloop-motion-x)*.35),calc(-3px + var(--bloop-motion-y)*.18)) rotate(calc(7deg + var(--bloop-motion-lean)*1.2)) scale(1.04,.92)}
+}
+@media(prefers-reduced-motion:reduce){
+  .bloop-2d-host.bloop-object-moving[data-bloop-object-kind] .bloop-2d-sprite{animation:none!important}
+}
