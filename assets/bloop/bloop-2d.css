@@ -435,3 +435,47 @@
   .bloop-2d-host.bloop-vehicle-boost::after{animation:none!important}
   .bloop-2d-host.bloop-object-attached[data-bloop-object-kind="train"] .bloop-2d-sprite{animation:none!important}
 }
+
+
+/* Vehicle release: a deliberate zoom-away arc restores Bloop's independent
+   companion personality after a moving-object interaction. */
+.bloop-2d-host.bloop-vehicle-release{
+  animation:bloop-vehicle-release 620ms cubic-bezier(.16,.8,.24,1) both!important;
+  z-index:9;
+}
+.bloop-2d-host.bloop-vehicle-release .bloop-2d-sprite{
+  animation:bloop-release-spin 620ms cubic-bezier(.16,.8,.24,1) both!important;
+}
+@keyframes bloop-vehicle-release{
+  0%{transform:translate(0,0) scale(1) rotate(0)}
+  35%{transform:translate(calc(var(--bloop-motion-x,0px)*.45),-22px) scale(1.08) rotate(calc(var(--bloop-motion-lean,0deg)*1.5))}
+  72%{transform:translate(calc(var(--bloop-motion-x,0px)*.85),-42px) scale(.82) rotate(calc(var(--bloop-motion-lean,0deg)*2))}
+  100%{transform:translate(calc(var(--bloop-motion-x,0px)*1.15),-12px) scale(.72) rotate(8deg)}
+}
+@keyframes bloop-release-spin{
+  0%{transform:rotate(0) scale(1)}
+  45%{transform:rotate(-7deg) scale(1.08,.92)}
+  100%{transform:rotate(10deg) scale(.9,1.02)}
+}
+.bloop-2d-host.bloop-vehicle-release::after{
+  content:"";
+  position:absolute;
+  left:10%;right:10%;top:45%;
+  height:7%;
+  border-radius:999px;
+  background:currentColor;
+  opacity:0;
+  transform-origin:center;
+  animation:bloop-release-streak 620ms ease-out both;
+  pointer-events:none;
+}
+@keyframes bloop-release-streak{
+  0%,20%{opacity:0;transform:scaleX(.2)}
+  55%{opacity:.24;transform:scaleX(1)}
+  100%{opacity:0;transform:scaleX(1.5) translateX(-12px)}
+}
+@media (prefers-reduced-motion:reduce){
+  .bloop-2d-host.bloop-vehicle-release,
+  .bloop-2d-host.bloop-vehicle-release .bloop-2d-sprite,
+  .bloop-2d-host.bloop-vehicle-release::after{animation:none!important}
+}
