@@ -403,6 +403,60 @@
   </div>
 </div>
 
+<script>
+/* Bloop camera bootstrap: deliberately runs BEFORE TensorFlow/COCO-SSD so
+   camera permission cannot be blocked by a slow/failed ML CDN load. */
+(function () {
+  const btn = document.getElementById('perm-btn');
+  const video = document.getElementById('camera-video');
+  const overlay = document.getElementById('perm-overlay');
+  const errorBox = document.getElementById('perm-error');
+  if (!btn || !video || !overlay) return;
+
+  async function openCameraDirectly(e) {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      if (e.stopImmediatePropagation) e.stopImmediatePropagation();
+    }
+    if (btn.dataset.cameraBusy === '1') return false;
+    btn.dataset.cameraBusy = '1';
+    btn.textContent = 'Opening camera…';
+    if (errorBox) errorBox.style.display = 'none';
+
+    try {
+      if (!window.isSecureContext) throw new Error('This page is not running in a secure HTTPS context.');
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        throw new Error('Camera API is unavailable in this browser context.');
+      }
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: 'environment' } },
+        audio: false
+      });
+      video.srcObject = stream;
+      await video.play();
+      video.classList.add('live');
+      overlay.classList.add('hidden');
+      document.documentElement.dataset.bloopCameraReady = '1';
+      btn.dataset.cameraBusy = '0';
+      return false;
+    } catch (err) {
+      btn.dataset.cameraBusy = '0';
+      btn.textContent = 'Try again';
+      if (errorBox) {
+        errorBox.textContent = 'Camera access failed: ' + ((err && (err.name || err.message)) || 'unknown error');
+        errorBox.style.display = 'block';
+      }
+      return false;
+    }
+  }
+
+  window.__bloopCameraTap = openCameraDirectly;
+  btn.addEventListener('pointerup', openCameraDirectly, {capture:true});
+  btn.addEventListener('touchend', openCameraDirectly, {capture:true, passive:false});
+  btn.addEventListener('click', openCameraDirectly, {capture:true});
+})();
+</script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
 <script src="./assets/bloop/bloop-2d.js"></script>
