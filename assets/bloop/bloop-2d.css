@@ -97,3 +97,16 @@
 @keyframes bloop-type-bounce{from{transform:translateY(1px) scale(.99,1)}to{transform:translateY(-2px) scale(1.01,.98)}}
 [data-bloop-state="mouse_play"] .bloop-2d-sprite{animation:bloop-mouse-play .32s cubic-bezier(.2,.8,.2,1) infinite alternate}
 @keyframes bloop-mouse-play{from{transform:translateX(-5px) rotate(-4deg) scale(.95)}to{transform:translateX(6px) rotate(4deg) scale(1.02)}}
+
+/* Energetic companion motion: quick anticipation, hops, acceleration and tiny idle life. */
+.bloop-2d-host{will-change:transform;}
+.bloop-2d-host.bloop-roaming{animation:bloop-fast-roam .62s cubic-bezier(.2,.85,.2,1) 1}
+@keyframes bloop-fast-roam{0%{transform:translateX(0) translateY(0) scale(1)}28%{transform:translateX(-8px) translateY(-7px) scale(.96,1.05)}55%{transform:translateX(12px) translateY(1px) scale(1.04,.95)}78%{transform:translateX(5px) translateY(-5px) scale(.98,1.02)}100%{transform:translateX(0) translateY(0) scale(1)}}
+.bloop-2d-host.bloop-chasing{animation:bloop-speed-chase .82s cubic-bezier(.15,.9,.18,1) 1}
+@keyframes bloop-speed-chase{0%{transform:translate(0) scale(.9,1.08)}18%{transform:translate(calc(var(--bloop-chase-x,0px)*.18),calc(var(--bloop-chase-y,0px)*.18)) scale(1.08,.9)}45%{transform:translate(calc(var(--bloop-chase-x,0px)*.58),calc(var(--bloop-chase-y,0px)*.58)) scale(.94,1.06)}78%{transform:translate(calc(var(--bloop-chase-x,0px)*.92),calc(var(--bloop-chase-y,0px)*.92)) scale(1.04,.96)}100%{transform:translate(var(--bloop-chase-x,0px),var(--bloop-chase-y,0px)) scale(1)}}
+[data-bloop-state="idle"] .bloop-2d-sprite{animation:bloop-alive-idle 2.8s ease-in-out infinite}
+@keyframes bloop-alive-idle{0%,100%{transform:translateY(0) scale(1)}22%{transform:translateY(-2px) scale(.99,1.015)}45%{transform:translateY(0) scale(1.01,.99)}72%{transform:translateY(-1px) scale(1)}}
+[data-bloop-state="curious"] .bloop-2d-sprite{animation:bloop-curious-pop .5s cubic-bezier(.2,.9,.2,1) 1}
+@keyframes bloop-curious-pop{0%{transform:scale(.9,.96) translateY(5px)}42%{transform:scale(1.08,.94) translateY(-5px) rotate(-3deg)}70%{transform:scale(.98,1.03) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+[data-bloop-state="dash"] .bloop-2d-sprite{animation:bloop-dash-pulse .28s ease-in-out infinite alternate}
+@keyframes bloop-dash-pulse{from{transform:scale(1.08,.88) rotate(-2deg)}to{transform:scale(.88,1.1) rotate(2deg)}}
