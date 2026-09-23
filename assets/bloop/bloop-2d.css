@@ -152,3 +152,15 @@
 @keyframes bloop-morph-source{0%{opacity:1;transform:scale(1) translateY(0)}38%{opacity:.96;transform:scale(1.12,.86) translateY(5px)}72%{opacity:.42;transform:scale(.92,1.08) translateY(10px)}100%{opacity:0;transform:scale(.82,1.12) translateY(7px)}}
 @keyframes bloop-morph-target{0%,32%{opacity:0;transform:scale(.76,.86) translateY(10px)}58%{opacity:.32;transform:scale(.9,1.04) translateY(4px)}82%{opacity:.82;transform:scale(1.03,.97) translateY(-2px)}100%{opacity:1;transform:scale(1) translateY(0)}}
 @media(prefers-reduced-motion:reduce){.bloop-2d-host.bloop-morphing .bloop-2d-sprite,.bloop-2d-host.bloop-morphing .bloop-morph-target{animation:none!important}.bloop-2d-host.bloop-morphing .bloop-morph-target{opacity:1}.bloop-2d-host.bloop-morphing .bloop-2d-sprite{opacity:0}}
+
+/* Precision target fitting: transformed Bloop hugs the detected object's interior/edge instead of floating over it. */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"]{padding:0 7%;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"] .bloop-morph-target{transform-origin:50% 96%;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"] .bloop-2d-sprite{transform-origin:50% 96%;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"]{padding:0 18%;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"] .bloop-morph-target{transform-origin:50% 76%;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"] .bloop-2d-sprite{transform-origin:50% 76%;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="tv"]{padding:0 4%;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="teddy"]{padding:0 3%;}
+/* A tiny contact shadow makes the transformed companion read as attached to the target. */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"]::after,.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"]::after{content:"";position:absolute;left:18%;right:18%;bottom:8%;height:12%;border-radius:50%;background:rgba(65,35,18,.16);filter:blur(4px);z-index:0;pointer-events:none;}
