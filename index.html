@@ -339,7 +339,7 @@
   <div class="dex-card">
     <div class="dex-head"><strong>BLOOPDEX</strong><button id="dex-close" aria-label="Close">×</button></div>
     <div class="dex-sub">Things Bloop has discovered and how Bloop reacted.</div>
-    <div id="dex-list"></div>
+    <div id="dex-count" aria-live="polite">0 discovered</div>\n  <div id="dex-list"></div>
   </div>
 </div>
 
@@ -501,7 +501,8 @@
   blob:["✨","curious","Bloop doesn't know this one yet — but it's interested."]
 };
   function renderDex() {
-    const entries = Object.entries(discoveries);
+    const entries = Object.entries(discoveries).sort((a,b)=>(b[1].firstSeen||0)-(a[1].firstSeen||0));
+    const countEl=document.getElementById("dex-count"); if(countEl) countEl.textContent=entries.length+" discovered";
     dexList.innerHTML = entries.length
       ? entries.map(([name,d])=>{const info=DISCOVERY_INFO[d.form]||DISCOVERY_INFO.blob;return `<div class="dex-item"><b>${info[0]} ${name}</b><span><strong>${info[1]}</strong> · ${info[2]}</span></div>`}).join('')
       : `<div class="dex-item" style="grid-column:1/-1"><b>No discoveries yet</b><span>Point Bloop at something and tap Scan.</span></div>`;
