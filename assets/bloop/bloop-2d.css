@@ -330,3 +330,48 @@
   50%{transform:translate(2px,-2px) rotate(2deg) scale(1.03,.95)}
   100%{transform:translate(10px,1px) rotate(7deg) scale(.9,1.02)}
 }
+
+
+/* Playful interaction layer: mouse pounce and laptop typing stay visually
+   distinct from object transformations. */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"] .bloop-2d-sprite{
+  transform-origin:50% 86%;
+  animation:bloop-mouse-pounce 760ms cubic-bezier(.18,.82,.28,1) infinite!important;
+}
+@keyframes bloop-mouse-pounce{
+  0%,100%{transform:translate(-7px,2px) rotate(-6deg) scale(.9,1.02)}
+  25%{transform:translate(0,-7px) rotate(0) scale(1.03,.94)}
+  52%{transform:translate(9px,0) rotate(7deg) scale(.88,1.04)}
+  76%{transform:translate(2px,-4px) rotate(1deg) scale(1.02,.96)}
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="laptop"] .bloop-2d-sprite{
+  transform-origin:50% 90%;
+  animation:bloop-laptop-type 620ms ease-in-out infinite!important;
+}
+@keyframes bloop-laptop-type{
+  0%,100%{transform:translateY(1px) scale(.98,1.02) rotate(-1deg)}
+  25%{transform:translate(-2px,3px) scale(1.01,.98) rotate(1deg)}
+  50%{transform:translate(2px,2px) scale(.99,1.01) rotate(-1deg)}
+  75%{transform:translate(-1px,3px) scale(1.01,.98) rotate(1deg)}
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="laptop"]::after{
+  content:"";
+  position:absolute;
+  left:31%;right:31%;bottom:12%;
+  height:7%;
+  border-radius:999px;
+  background:currentColor;
+  opacity:.16;
+  animation:bloop-typing-shadow 620ms ease-in-out infinite;
+}
+@keyframes bloop-typing-shadow{
+  0%,100%{transform:scaleX(.8);opacity:.1}
+  50%{transform:scaleX(1.15);opacity:.2}
+}
+@media (prefers-reduced-motion:reduce){
+  .bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"] .bloop-2d-sprite,
+  .bloop-2d-host.bloop-object-attached[data-bloop-object-kind="laptop"] .bloop-2d-sprite,
+  .bloop-2d-host.bloop-object-attached[data-bloop-object-kind="laptop"]::after{
+    animation:none!important;
+  }
+}
