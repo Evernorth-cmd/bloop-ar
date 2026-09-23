@@ -213,9 +213,13 @@
 
   /* Permission overlay */
   #perm-overlay {
-    position: fixed; inset: 0;
-    z-index: 10000;
-    pointer-events: auto;
+    position: fixed;
+    inset: 0;
+    z-index: 2147483646;
+    pointer-events: auto !important;
+    isolation: isolate;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
     display: flex; align-items: center; justify-content: center;
     background: rgba(11,8,16,0.92);
     backdrop-filter: blur(4px);
@@ -224,11 +228,33 @@
     transition: opacity .4s ease;
   }
   #perm-overlay.hidden { opacity: 0; pointer-events: none; }
-  #perm-card { max-width: 300px; display: flex; flex-direction: column; align-items: center; gap: 14px; position:relative; z-index:10001; pointer-events:auto; }
+  #perm-card {
+    max-width: 300px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    z-index: 2147483647;
+    pointer-events: auto !important;
+  }
   #perm-emoji { font-size: 44px; }
   #perm-title { font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 600; color: var(--amber-light); }
   #perm-body { font-size: 14px; color: var(--muted); line-height: 1.5; }
-  #perm-btn { position:relative; z-index:10002; pointer-events:auto; touch-action:manipulation; -webkit-user-select:none; user-select:none;
+  #perm-btn {
+    position: relative;
+    z-index: 2147483647;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 190px;
+    min-height: 52px;
+    pointer-events: auto !important;
+    touch-action: manipulation;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-appearance: none;
+    appearance: none;
     margin-top: 4px;
     padding: 11px 22px;
     border-radius: 100px;
@@ -469,7 +495,15 @@
       return false;
     }
   }
-  permBtn.addEventListener('click', (e) => { e.preventDefault(); e.stopPropagation(); startCamera(); });
+  function cameraButtonPress(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    if (permBtn.disabled) return;
+    permBtn.textContent = 'Opening camera…';
+    startCamera();
+  }
+  permBtn.addEventListener('click', cameraButtonPress);
+  permBtn.addEventListener('touchend', cameraButtonPress, { passive: false });
   // Do NOT auto-request on load — on iOS Safari and most in-app browsers, getUserMedia
   // silently fails without a direct user tap. Wait for the button press instead.
 
