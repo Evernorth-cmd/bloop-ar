@@ -523,6 +523,27 @@
   window.addEventListener('pointermove',e=>moveBloopToward(e.clientX,e.clientY),{passive:true});
   window.addEventListener('pointerdown',e=>{moveBloopToward(e.clientX,e.clientY);bloop2d.play('excited',{next:'idle'})},{passive:true});
 
+  // Bloop roaming companion: occasional short hops keep the character feeling alive.
+  const bloopRoamHost=document.getElementById('bloop-character');
+  let bloopRoamTimer=null;
+  function scheduleBloopRoam(){
+    if(!bloopRoamHost||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    clearTimeout(bloopRoamTimer);
+    bloopRoamTimer=setTimeout(()=>{
+      if(!bloopRoamHost.classList.contains('bloop-following')){
+        const x=(Math.random()*18-9).toFixed(1);
+        const y=(Math.random()*10-5).toFixed(1);
+        bloopRoamHost.style.setProperty('--bloop-roam-x',x+'%');
+        bloopRoamHost.style.setProperty('--bloop-roam-y',y+'%');
+        bloopRoamHost.classList.add('bloop-roaming');
+        bloop2d.play('curious',{next:'idle'});
+        setTimeout(()=>bloopRoamHost.classList.remove('bloop-roaming'),700);
+      }
+      scheduleBloopRoam();
+    },4200+Math.random()*4200);
+  }
+  scheduleBloopRoam();
+
   window.__bloopScan=scanRoom;
 })();
 </script>
