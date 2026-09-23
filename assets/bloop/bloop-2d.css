@@ -1,0 +1,481 @@
+.bloop-2d-host{position:absolute;left:50%;bottom:14%;width:clamp(118px,30vw,176px);aspect-ratio:1;transform:translateX(-50%);z-index:4;pointer-events:none;display:grid;place-items:center}.bloop-2d-sprite{width:100%;height:100%;object-fit:contain;user-select:none;-webkit-user-drag:none;transform-origin:50% 86%;animation:bloop-float 1.35s ease-in-out infinite}.bloop-2d-host[data-bloop-state="idle"] .bloop-2d-sprite{animation:bloop-float 1.35s ease-in-out infinite}.bloop-2d-host[data-bloop-state="curious"] .bloop-2d-sprite{animation:bloop-curious .75s ease-in-out 1}.bloop-2d-host[data-bloop-state="thinking"] .bloop-2d-sprite{animation:bloop-think .8s ease-in-out infinite}.bloop-2d-host[data-bloop-state="run"] .bloop-2d-sprite,.bloop-2d-host[data-bloop-state="dash"] .bloop-2d-sprite{animation:bloop-dash .22s cubic-bezier(.2,.8,.2,1) infinite alternate}.bloop-2d-host[data-bloop-state="happy"] .bloop-2d-sprite{animation:bloop-happy .3s ease-in-out 3}.bloop-2d-host[data-bloop-state="celebrate"] .bloop-2d-sprite,.bloop-2d-host[data-bloop-state="excited"] .bloop-2d-sprite{animation:bloop-celebrate .27s ease-in-out 4}.bloop-2d-host[data-bloop-state="surprised"] .bloop-2d-sprite{animation:bloop-surprised .45s ease-out 1}.bloop-2d-host[data-bloop-state="sleep"] .bloop-2d-sprite{animation:bloop-sleep 2.2s ease-in-out infinite}.bloop-2d-host .speed-lines{opacity:0;transform-origin:70px 135px}.bloop-2d-host[data-bloop-state="run"] .speed-lines,.bloop-2d-host[data-bloop-state="dash"] .speed-lines{opacity:1;animation:lines .25s linear infinite alternate}.bloop-2d-host .sparkles{animation:sparkle 1.8s ease-in-out infinite}.bloop-2d-host[data-bloop-state="thinking"] .sparkles{opacity:.25}.bloop-2d-host[data-bloop-state="sleep"] .sparkles{opacity:0}.bloop-2d-host .eyes{transform-origin:128px 107px;animation:blink 4.2s infinite}.bloop-2d-host[data-bloop-state="surprised"] .eyes{transform:scale(1.08)}.bloop-2d-host[data-bloop-state="curious"] .eyes{transform:translateX(5px)}.bloop-2d-host[data-bloop-state="thinking"] .pupil{transform:translate(-4px,-3px)}.bloop-2d-host[data-bloop-state="sleep"] .eyes{transform:scaleY(.12)}@keyframes blink{0%,43%,47%,100%{transform:scaleY(1)}45%{transform:scaleY(.08)}}@keyframes bloop-float{0%,100%{transform:translateY(0) rotate(0) scale(1)}50%{transform:translateY(-5px) rotate(-1deg) scale(1.015)}}@keyframes bloop-curious{0%{transform:translateY(0) rotate(0) scale(1)}30%{transform:translateY(-7px) rotate(-8deg) scale(1.04)}65%{transform:translateY(-3px) rotate(7deg) scale(1.02)}100%{transform:translateY(0) rotate(0) scale(1)}}@keyframes bloop-think{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(3deg)}}@keyframes bloop-dash{from{transform:translateX(-8px) rotate(-3deg) scale(.97,1.02)}to{transform:translateX(9px) rotate(3deg) scale(1.03,.97)}}@keyframes bloop-happy{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-10px) scale(1.06,1.09)}}@keyframes bloop-celebrate{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-16px) rotate(-4deg) scale(1.1)}}@keyframes bloop-surprised{0%{transform:scale(.94)}45%{transform:scale(1.1)}100%{transform:scale(1)}}@keyframes bloop-sleep{0%,100%{transform:translateY(3px) scaleY(.98)}50%{transform:translateY(6px) scaleY(1.02)}}@keyframes lines{from{transform:translateX(0);opacity:.45}to{transform:translateX(-14px);opacity:1}}@keyframes sparkle{0%,100%{opacity:.5;transform:scale(.9)}50%{opacity:1;transform:scale(1.15)}}@media(max-height:700px){.bloop-2d-host{bottom:19%;width:clamp(100px,25vw,145px)}}@media(prefers-reduced-motion:reduce){.bloop-2d-sprite{animation:none!important}}
+/* Companion interaction: Bloop subtly leans toward the user's pointer/touch. */
+.bloop-2d-host{--bloop-pointer-x:50%;--bloop-pointer-y:50%;transition:transform .28s cubic-bezier(.2,.8,.2,1)}
+.bloop-2d-host.bloop-following{transform:translateX(-50%) translate(calc((var(--bloop-pointer-x) - 50%) * .055),calc((var(--bloop-pointer-y) - 50%) * .035))}
+.bloop-2d-host.bloop-following .bloop-2d-sprite{animation:bloop-follow .42s ease-out 1}
+@keyframes bloop-follow{0%{transform:translateY(0) rotate(0) scale(1)}45%{transform:translateY(-5px) rotate(-2deg) scale(1.035)}100%{transform:translateY(0) rotate(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.bloop-2d-host{transition:none}.bloop-2d-host.bloop-following{transform:translateX(-50%)}}
+
+.bloop-2d-host.bloop-roaming{animation:bloop-roam .7s cubic-bezier(.2,.9,.2,1) 1}
+@keyframes bloop-roam{0%{transform:translateX(-50%) translate(0,0) scale(1)}35%{transform:translateX(-50%) translate(var(--bloop-roam-x),var(--bloop-roam-y)) scale(1.035)}70%{transform:translateX(-50%) translate(calc(var(--bloop-roam-x) * .85),calc(var(--bloop-roam-y) * .85)) scale(1)}100%{transform:translateX(-50%) translate(0,0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.bloop-2d-host.bloop-roaming{animation:none}}
+
+.bloop-2d-host.bloop-chasing{animation:bloop-chase .9s cubic-bezier(.12,.88,.2,1) 1;z-index:6}
+@keyframes bloop-chase{0%{transform:translateX(-50%) translate(0,0) scale(1)}18%{transform:translateX(-50%) translate(0,-7px) scale(1.04)}62%{transform:translateX(-50%) translate(var(--bloop-chase-x),var(--bloop-chase-y)) scale(1.06)}78%{transform:translateX(-50%) translate(calc(var(--bloop-chase-x) * .94),calc(var(--bloop-chase-y) * .94)) scale(1.02)}100%{transform:translateX(-50%) translate(0,0) scale(1)}}
+.bloop-2d-host.bloop-chasing .bloop-2d-sprite{animation:bloop-chase-bounce .16s ease-in-out infinite alternate}
+@keyframes bloop-chase-bounce{from{transform:translateY(0) rotate(-3deg)}to{transform:translateY(-6px) rotate(3deg)}}
+@media(prefers-reduced-motion:reduce){.bloop-2d-host.bloop-chasing{animation:none}.bloop-2d-host.bloop-chasing .bloop-2d-sprite{animation:none}}
+
+/* Object personality accents */
+[data-bloop-state="typing"] .bloop-2d-sprite{animation:bloop-type .18s ease-in-out infinite alternate}
+@keyframes bloop-type{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-3px) rotate(1deg)}}
+[data-bloop-state="mouse_play"] .bloop-2d-sprite{animation:bloop-play .42s ease-in-out infinite alternate}
+@keyframes bloop-play{from{transform:translateX(-3px) rotate(-3deg)}to{transform:translateX(4px) rotate(3deg)}}
+[data-bloop-state="train_zoom"] .bloop-2d-sprite{animation:bloop-zoom .16s linear infinite alternate}
+@keyframes bloop-zoom{from{transform:translateX(-5px) skewX(-3deg)}to{transform:translateX(6px) skewX(3deg)}}
+
+
+/* Interaction-specific physical accents */
+[data-bloop-state="mouse_found"] .bloop-2d-sprite{animation:bloop-reach .5s cubic-bezier(.2,.9,.2,1) infinite alternate}
+@keyframes bloop-reach{from{transform:translateX(-2px) rotate(-2deg)}to{transform:translateX(6px) rotate(4deg)}}
+[data-bloop-state="typing"] .bloop-2d-sprite{animation:bloop-type .16s ease-in-out infinite alternate}
+@keyframes bloop-type{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-3px) rotate(1deg)}}
+[data-bloop-state="train_zoom"] .bloop-2d-sprite{animation:bloop-sprint .12s linear infinite alternate}
+@keyframes bloop-sprint{from{transform:translateX(-6px) skewX(-4deg)}to{transform:translateX(7px) skewX(4deg)}}
+[data-bloop-state="celebrate"] .bloop-2d-sprite{animation:bloop-celeb .3s cubic-bezier(.2,.9,.2,1) infinite alternate}
+@keyframes bloop-celeb{from{transform:translateY(0) scale(1)}to{transform:translateY(-7px) scale(1.045)}}
+
+/* Shape-shift morph beats: squash/stretch before Bloop resolves into the detected object. */
+[data-bloop-state="cup_melt"] .bloop-2d-sprite{animation:bloop-cup-melt .38s cubic-bezier(.2,.9,.2,1) 1;transform-origin:50% 92%}
+[data-bloop-state="cup_slime"] .bloop-2d-sprite{animation:bloop-cup-slime 1.05s cubic-bezier(.2,.8,.2,1) 1;transform-origin:50% 90%}
+@keyframes bloop-cup-melt{0%{transform:scale(1) translateY(0)}45%{transform:scale(1.18,.72) translateY(8px)}100%{transform:scale(.72,1.18) translateY(5px)}}
+@keyframes bloop-cup-slime{0%{transform:scale(.72,1.18) translateY(5px)}35%{transform:scale(.92,.88) translateY(8px)}70%{transform:scale(.7,1.12) translateY(10px)}100%{transform:scale(.82,1) translateY(6px)}}
+[data-bloop-state="bottle_stretch"] .bloop-2d-sprite{animation:bloop-bottle-stretch .36s cubic-bezier(.2,.9,.2,1) 1;transform-origin:50% 90%}
+[data-bloop-state="bottle_snake"] .bloop-2d-sprite{animation:bloop-bottle-snake 1.05s cubic-bezier(.2,.8,.2,1) 1;transform-origin:50% 88%}
+@keyframes bloop-bottle-stretch{0%{transform:scale(1)}55%{transform:scale(.68,1.42) rotate(-4deg)}100%{transform:scale(.48,1.55) rotate(3deg)}}
+@keyframes bloop-bottle-snake{0%{transform:scale(.48,1.55) rotate(3deg)}25%{transform:scale(.68,1.3) rotate(-8deg) translateX(5px)}55%{transform:scale(.58,1.38) rotate(8deg) translateX(-5px)}100%{transform:scale(.72,1.08) rotate(0)}}
+[data-bloop-state="tv_transform"] .bloop-2d-sprite{animation:bloop-tv-transform .38s cubic-bezier(.2,.9,.2,1) 1;transform-origin:50% 85%}
+[data-bloop-state="tv_remote"] .bloop-2d-sprite{animation:bloop-remote-form 1.05s cubic-bezier(.2,.8,.2,1) 1;transform-origin:50% 85%}
+@keyframes bloop-tv-transform{0%{transform:scale(1)}45%{transform:scale(1.3,.72)}100%{transform:scale(.62,1.38) rotate(2deg)}}
+@keyframes bloop-remote-form{0%{transform:scale(.62,1.38) rotate(2deg)}35%{transform:scale(.8,1.18) rotate(-3deg)}70%{transform:scale(.72,1.28) rotate(3deg)}100%{transform:scale(.86,1.05) rotate(0)}}
+[data-bloop-state="teddy_transform"] .bloop-2d-sprite{animation:bloop-teddy-transform .38s cubic-bezier(.2,.9,.2,1) 1;transform-origin:50% 86%}
+[data-bloop-state="teddy"] .bloop-2d-sprite{animation:bloop-teddy-form 1.05s cubic-bezier(.2,.8,.2,1) 1;transform-origin:50% 86%}
+@keyframes bloop-teddy-transform{0%{transform:scale(1)}40%{transform:scale(1.18,1.02)}70%{transform:scale(.82,1.22)}100%{transform:scale(1.08,1.05)}}
+@keyframes bloop-teddy-form{0%{transform:scale(1.08,1.05)}30%{transform:scale(.94,1.18) rotate(-3deg)}60%{transform:scale(1.08,.96) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+
+/* Detected-object anchoring: the companion leans toward and visually hugs the detected target. */
+.bloop-2d-host.bloop-object-attached{transition:transform .28s cubic-bezier(.2,.8,.2,1);filter:drop-shadow(0 10px 16px rgba(0,0,0,.18))}
+.bloop-2d-host.bloop-object-attached[data-bloop-state="cup_slime"] .bloop-2d-sprite{animation:bloop-cup-hug .9s ease-in-out infinite alternate}
+.bloop-2d-host.bloop-object-attached[data-bloop-state="bottle_snake"] .bloop-2d-sprite{animation:bloop-bottle-hug .72s ease-in-out infinite alternate}
+.bloop-2d-host.bloop-object-attached[data-bloop-state="tv_remote"] .bloop-2d-sprite{animation:bloop-remote-hug .8s ease-in-out infinite alternate}
+.bloop-2d-host.bloop-object-attached[data-bloop-state="teddy"] .bloop-2d-sprite{animation:bloop-teddy-hug .8s ease-in-out infinite alternate}
+@keyframes bloop-cup-hug{from{transform:translateY(3px) scale(.88,.96)}to{transform:translateY(0) scale(.94,1.02)}}
+@keyframes bloop-bottle-hug{from{transform:rotate(-5deg) scale(.78,1.08)}to{transform:rotate(5deg) scale(.72,1.16)}}
+@keyframes bloop-remote-hug{from{transform:rotate(-2deg) scale(.88,1.04)}to{transform:rotate(2deg) scale(.92,1.02)}}
+@keyframes bloop-teddy-hug{from{transform:translateY(2px) scale(.96)}to{transform:translateY(-3px) scale(1.03)}}
+
+/* Object-aware placement: after the chase, the transformation occupies the detected target's footprint. */
+.bloop-2d-host.bloop-object-attached{left:var(--bloop-object-x,50%);bottom:auto;top:var(--bloop-object-y,70%);width:min(var(--bloop-transform-w,var(--bloop-object-w,150px)),42vw);height:min(var(--bloop-transform-h,var(--bloop-object-h,150px)),42vw);transform:translate(-50%,-50%) scale(var(--bloop-object-scale,1));z-index:7}
+.bloop-2d-host.bloop-object-attached.bloop-following{transform:translate(-50%,-50%)}
+@media(prefers-reduced-motion:reduce){.bloop-2d-host.bloop-object-attached{transition:none}}
+
+/* Object-specific physical placement. */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"]{transform:translate(-50%,-50%) translateY(calc((var(--bloop-object-h,150px) * (var(--bloop-object-anchor-y,.5) - .5))))}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"] .bloop-2d-sprite{transform-origin:50% 75%}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"]{z-index:8}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="tv"]{transform:translate(-50%,-50%) translateY(calc((var(--bloop-object-h,150px) * (var(--bloop-object-anchor-y,.5) - .5))))}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"]{z-index:9;width:min(var(--bloop-transform-w,110px),28vw);height:min(var(--bloop-transform-h,110px),28vw)}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"] .bloop-2d-sprite{transform-origin:50% 92%}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="teddy"] .bloop-2d-sprite{transform-origin:50% 86%}
+
+/* Physical transformation choreography: approach, contact, then settle into the object. */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"] .bloop-2d-sprite{animation:bloop-cup-enter 1.05s cubic-bezier(.18,.82,.22,1) 1 forwards}
+@keyframes bloop-cup-enter{0%{transform:translateY(-24px) scale(.9,1.05);opacity:.98}22%{transform:translateY(-8px) scale(1.02,.94)}48%{transform:translateY(4px) scale(1.12,.78)}72%{transform:translateY(14px) scale(.82,1.02)}100%{transform:translateY(7px) scale(.88,.94)}}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"] .bloop-2d-sprite{animation:bloop-bottle-wrap 1.05s cubic-bezier(.18,.82,.22,1) 1 forwards}
+@keyframes bloop-bottle-wrap{0%{transform:translateX(-18px) rotate(-12deg) scale(.65,1.1)}25%{transform:translateX(-8px) rotate(-20deg) scale(.52,1.3)}50%{transform:translateX(9px) rotate(18deg) scale(.48,1.38)}75%{transform:translateX(5px) rotate(8deg) scale(.58,1.22)}100%{transform:translateX(0) rotate(0) scale(.7,1.1)}}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="tv"] .bloop-2d-sprite{animation:bloop-tv-settle .9s cubic-bezier(.2,.8,.2,1) 1 forwards}
+@keyframes bloop-tv-settle{0%{transform:translateY(12px) scale(.72,1.15) rotate(-5deg)}40%{transform:translateY(-5px) scale(.9,1.04) rotate(4deg)}70%{transform:translateY(3px) scale(.82,1.08) rotate(-2deg)}100%{transform:translateY(0) scale(.86,1.04) rotate(0)}}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="teddy"] .bloop-2d-sprite{animation:bloop-teddy-settle .9s cubic-bezier(.2,.8,.2,1) 1 forwards}
+@keyframes bloop-teddy-settle{0%{transform:translateY(10px) scale(.86,.94)}45%{transform:translateY(-4px) scale(1.06,1.08)}70%{transform:translateY(2px) scale(.98,1.02)}100%{transform:translateY(0) scale(1)}}
+
+/* Mouse + laptop physical personalities */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"] .bloop-2d-sprite{animation:bloop-mouse-pounce .82s cubic-bezier(.18,.82,.22,1) 1 forwards}
+@keyframes bloop-mouse-pounce{0%{transform:translate(-22px,10px) scale(.72,.88) rotate(-12deg)}25%{transform:translate(-8px,-8px) scale(1.08,.82) rotate(8deg)}48%{transform:translate(10px,3px) scale(.84,1.08) rotate(-5deg)}70%{transform:translate(2px,-3px) scale(1.02,.9) rotate(3deg)}100%{transform:translate(0) scale(.92,1) rotate(0)}}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="laptop"] .bloop-2d-sprite{animation:bloop-laptop-type .9s ease-in-out infinite alternate}
+@keyframes bloop-laptop-type{from{transform:translateY(3px) scale(.96,1) rotate(-1deg)}to{transform:translateY(-3px) scale(1.02,.97) rotate(1deg)}}
+[data-bloop-state="typing"] .bloop-2d-sprite{animation:bloop-type-bounce .22s ease-in-out infinite alternate}
+@keyframes bloop-type-bounce{from{transform:translateY(1px) scale(.99,1)}to{transform:translateY(-2px) scale(1.01,.98)}}
+[data-bloop-state="mouse_play"] .bloop-2d-sprite{animation:bloop-mouse-play .32s cubic-bezier(.2,.8,.2,1) infinite alternate}
+@keyframes bloop-mouse-play{from{transform:translateX(-5px) rotate(-4deg) scale(.95)}to{transform:translateX(6px) rotate(4deg) scale(1.02)}}
+
+/* Energetic companion motion: quick anticipation, hops, acceleration and tiny idle life. */
+.bloop-2d-host{will-change:transform;}
+.bloop-2d-host.bloop-roaming{animation:bloop-fast-roam .62s cubic-bezier(.2,.85,.2,1) 1}
+@keyframes bloop-fast-roam{0%{transform:translateX(0) translateY(0) scale(1)}28%{transform:translateX(-8px) translateY(-7px) scale(.96,1.05)}55%{transform:translateX(12px) translateY(1px) scale(1.04,.95)}78%{transform:translateX(5px) translateY(-5px) scale(.98,1.02)}100%{transform:translateX(0) translateY(0) scale(1)}}
+.bloop-2d-host.bloop-chasing{animation:bloop-speed-chase .82s cubic-bezier(.15,.9,.18,1) 1}
+@keyframes bloop-speed-chase{0%{transform:translate(0) scale(.9,1.08)}18%{transform:translate(calc(var(--bloop-chase-x,0px)*.18),calc(var(--bloop-chase-y,0px)*.18)) scale(1.08,.9)}45%{transform:translate(calc(var(--bloop-chase-x,0px)*.58),calc(var(--bloop-chase-y,0px)*.58)) scale(.94,1.06)}78%{transform:translate(calc(var(--bloop-chase-x,0px)*.92),calc(var(--bloop-chase-y,0px)*.92)) scale(1.04,.96)}100%{transform:translate(var(--bloop-chase-x,0px),var(--bloop-chase-y,0px)) scale(1)}}
+[data-bloop-state="idle"] .bloop-2d-sprite{animation:bloop-alive-idle 2.8s ease-in-out infinite}
+@keyframes bloop-alive-idle{0%,100%{transform:translateY(0) scale(1)}22%{transform:translateY(-2px) scale(.99,1.015)}45%{transform:translateY(0) scale(1.01,.99)}72%{transform:translateY(-1px) scale(1)}}
+[data-bloop-state="curious"] .bloop-2d-sprite{animation:bloop-curious-pop .5s cubic-bezier(.2,.9,.2,1) 1}
+@keyframes bloop-curious-pop{0%{transform:scale(.9,.96) translateY(5px)}42%{transform:scale(1.08,.94) translateY(-5px) rotate(-3deg)}70%{transform:scale(.98,1.03) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+[data-bloop-state="dash"] .bloop-2d-sprite{animation:bloop-dash-pulse .28s ease-in-out infinite alternate}
+@keyframes bloop-dash-pulse{from{transform:scale(1.08,.88) rotate(-2deg)}to{transform:scale(.88,1.1) rotate(2deg)}}
+
+/* Object-aware attention: Bloop looks, anticipates, then celebrates. */
+.bloop-2d-host.bloop-object-attached::before{content:"";position:absolute;inset:-18%;border-radius:50%;pointer-events:none;opacity:0;transform:scale(.72);background:radial-gradient(circle,rgba(255,220,80,.18) 0 18%,transparent 58%);animation:bloop-attention-pulse 1.35s ease-out 1;}
+@keyframes bloop-attention-pulse{0%{opacity:0;transform:scale(.72)}20%{opacity:1;transform:scale(.92)}65%{opacity:.28;transform:scale(1.08)}100%{opacity:0;transform:scale(1.22)}}
+.bloop-2d-host.bloop-chasing::after{content:"";position:absolute;width:120%;height:28%;left:-72%;top:58%;border-radius:50%;pointer-events:none;opacity:.65;filter:blur(2px);background:linear-gradient(90deg,transparent,rgba(255,190,60,.34),rgba(255,235,120,.08));transform:skewX(-18deg);animation:bloop-speed-trail .42s ease-out 1;}
+@keyframes bloop-speed-trail{0%{opacity:0;transform:translateX(28px) scaleX(.35) skewX(-18deg)}35%{opacity:.75;transform:translateX(0) scaleX(1) skewX(-18deg)}100%{opacity:0;transform:translateX(-20px) scaleX(.55) skewX(-18deg)}}
+[data-bloop-state="happy"] .bloop-2d-sprite,[data-bloop-state="celebrate"] .bloop-2d-sprite{animation:bloop-happy-hop .55s cubic-bezier(.2,.9,.2,1) 1}
+@keyframes bloop-happy-hop{0%{transform:translateY(3px) scale(.94,1.04)}35%{transform:translateY(-10px) scale(1.04,.94) rotate(-3deg)}65%{transform:translateY(-4px) scale(.98,1.02) rotate(3deg)}100%{transform:translateY(0) scale(1) rotate(0)}}
+[data-bloop-state="excited"] .bloop-2d-sprite{animation:bloop-excited-bounce .34s cubic-bezier(.2,.9,.2,1) infinite alternate}
+@keyframes bloop-excited-bounce{from{transform:translateY(1px) rotate(-2deg) scale(.96,1.04)}to{transform:translateY(-7px) rotate(2deg) scale(1.05,.95)}}
+
+/* Transformation choreography: Bloop visibly reshapes before the target form appears. */
+[data-bloop-state="cup_melt"] .bloop-2d-sprite{animation:bloop-melt-cup .38s cubic-bezier(.18,.82,.22,1) 1;transform-origin:50% 86%;}
+@keyframes bloop-melt-cup{0%{transform:translateY(0) scale(1,1)}28%{transform:translateY(5px) scale(1.1,.84)}62%{transform:translateY(12px) scale(1.28,.58)}100%{transform:translateY(20px) scale(1.42,.42)}}
+[data-bloop-state="bottle_stretch"] .bloop-2d-sprite{animation:bloop-stretch-bottle .36s cubic-bezier(.2,.9,.2,1) 1;transform-origin:50% 72%;}
+@keyframes bloop-stretch-bottle{0%{transform:scale(1,1)}30%{transform:translateX(7px) scale(.82,1.12) rotate(5deg)}65%{transform:translateX(-8px) scale(.62,1.3) rotate(-8deg)}100%{transform:translateX(0) scale(.54,1.48) rotate(0)}}
+[data-bloop-state="tv_transform"] .bloop-2d-sprite{animation:bloop-remote-shift .38s cubic-bezier(.18,.9,.2,1) 1;transform-origin:50% 70%;}
+@keyframes bloop-remote-shift{0%{transform:scale(1)}25%{transform:translateY(-4px) scale(.92,1.08)}55%{transform:translateY(3px) scale(.62,1.24) rotate(7deg)}100%{transform:translateY(0) scale(.48,1.35) rotate(0)}}
+[data-bloop-state="teddy_transform"] .bloop-2d-sprite{animation:bloop-teddy-grow .38s cubic-bezier(.2,.9,.2,1) 1;transform-origin:50% 78%;}
+@keyframes bloop-teddy-grow{0%{transform:scale(1)}30%{transform:translateY(-4px) scale(1.12,.9)}62%{transform:translateY(-7px) scale(1.28,1.12)}100%{transform:translateY(0) scale(1.18,1.14)}}
+/* Hide the transition flash and make the handoff feel like one continuous motion. */
+[data-bloop-state$="_transform"] .bloop-2d-sprite{filter:drop-shadow(0 8px 10px rgba(0,0,0,.08));}
+[data-bloop-state$="_melt"] .bloop-2d-sprite{filter:blur(.2px) drop-shadow(0 8px 10px rgba(0,0,0,.08));}
+
+/* Live target response: Bloop leans into moving objects and quickly re-centers. */
+.bloop-2d-host.bloop-object-moving .bloop-2d-sprite{animation:bloop-follow-lean .34s cubic-bezier(.18,.82,.22,1) infinite alternate;}
+@keyframes bloop-follow-lean{0%{transform:translateX(-3px) rotate(-2deg) scale(.98,1.02)}100%{transform:translateX(5px) rotate(3deg) scale(1.03,.97)}}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"].bloop-object-moving .bloop-2d-sprite{animation:bloop-mouse-track .24s ease-in-out infinite alternate}
+@keyframes bloop-mouse-track{from{transform:translateX(-7px) rotate(-5deg) scale(.9,1.02)}to{transform:translateX(8px) rotate(5deg) scale(1.02,.94)}}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"].bloop-object-moving .bloop-2d-sprite{animation:bloop-snake-track .3s ease-in-out infinite alternate}
+@keyframes bloop-snake-track{from{transform:translateX(-4px) rotate(-4deg) scale(.72,1.12)}to{transform:translateX(5px) rotate(5deg) scale(.7,1.18)}}
+@media(prefers-reduced-motion:reduce){.bloop-2d-host.bloop-object-moving .bloop-2d-sprite{animation:none}}
+
+/* Layered transformation handoff: keep Bloop visible while the target silhouette fades in. */
+.bloop-2d-host{isolation:isolate;}
+.bloop-2d-host .bloop-morph-target{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;opacity:0;pointer-events:none;user-select:none;-webkit-user-drag:none;z-index:2;transform-origin:50% 86%;filter:saturate(.96) drop-shadow(0 5px 9px rgba(0,0,0,.1));}
+.bloop-2d-host .bloop-2d-sprite{position:relative;z-index:1;}
+.bloop-2d-host.bloop-morphing .bloop-2d-sprite{animation:bloop-morph-source .38s cubic-bezier(.18,.82,.22,1) 1 forwards!important;}
+.bloop-2d-host.bloop-morphing .bloop-morph-target{animation:bloop-morph-target .38s cubic-bezier(.18,.82,.22,1) 1 forwards;}
+@keyframes bloop-morph-source{0%{opacity:1;transform:scale(1) translateY(0)}38%{opacity:.96;transform:scale(1.12,.86) translateY(5px)}72%{opacity:.42;transform:scale(.92,1.08) translateY(10px)}100%{opacity:0;transform:scale(.82,1.12) translateY(7px)}}
+@keyframes bloop-morph-target{0%,32%{opacity:0;transform:scale(.76,.86) translateY(10px)}58%{opacity:.32;transform:scale(.9,1.04) translateY(4px)}82%{opacity:.82;transform:scale(1.03,.97) translateY(-2px)}100%{opacity:1;transform:scale(1) translateY(0)}}
+@media(prefers-reduced-motion:reduce){.bloop-2d-host.bloop-morphing .bloop-2d-sprite,.bloop-2d-host.bloop-morphing .bloop-morph-target{animation:none!important}.bloop-2d-host.bloop-morphing .bloop-morph-target{opacity:1}.bloop-2d-host.bloop-morphing .bloop-2d-sprite{opacity:0}}
+
+/* Precision target fitting: transformed Bloop hugs the detected object's interior/edge instead of floating over it. */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"]{padding:0 7%;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"] .bloop-morph-target{transform-origin:50% 96%;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"] .bloop-2d-sprite{transform-origin:50% 96%;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"]{padding:0 18%;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"] .bloop-morph-target{transform-origin:50% 76%;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"] .bloop-2d-sprite{transform-origin:50% 76%;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="tv"]{padding:0 4%;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="teddy"]{padding:0 3%;}
+/* A tiny contact shadow makes the transformed companion read as attached to the target. */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"]::after,.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"]::after{content:"";position:absolute;left:18%;right:18%;bottom:8%;height:12%;border-radius:50%;background:rgba(65,35,18,.16);filter:blur(4px);z-index:0;pointer-events:none;}
+
+
+/* Motion personality: Bloop reacts to the target's movement instead of only following its center. */
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="cup"] .bloop-2d-sprite{
+  animation:bloop-cup-cling .42s cubic-bezier(.18,.82,.22,1) infinite alternate!important;
+}
+@keyframes bloop-cup-cling{
+  from{transform:translate(-3px,-1px) rotate(-3deg) scale(.9,.98)}
+  to{transform:translate(4px,2px) rotate(4deg) scale(.96,.92)}
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="bottle"] .bloop-2d-sprite{
+  animation:bloop-bottle-sway .28s ease-in-out infinite alternate!important;
+}
+@keyframes bloop-bottle-sway{
+  from{transform:rotate(-9deg) skewY(-2deg) scale(.72,1.12)}
+  to{transform:rotate(9deg) skewY(2deg) scale(.7,1.16)}
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="tv"] .bloop-2d-sprite{
+  animation:bloop-remote-jolt .34s cubic-bezier(.2,.8,.2,1) infinite alternate!important;
+}
+@keyframes bloop-remote-jolt{
+  from{transform:translateX(-3px) rotate(-3deg) scale(.88,1.02)}
+  to{transform:translateX(4px) rotate(3deg) scale(.94,1)}
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="teddy"] .bloop-2d-sprite{
+  animation:bloop-teddy-cling .38s cubic-bezier(.2,.9,.2,1) infinite alternate!important;
+}
+@keyframes bloop-teddy-cling{
+  from{transform:translateY(2px) rotate(-3deg) scale(.97)}
+  to{transform:translateY(-4px) rotate(3deg) scale(1.03)}
+}
+/* Fast-moving mouse: Bloop springs toward the side the target is traveling toward. */
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="mouse"] .bloop-2d-sprite{
+  animation:bloop-mouse-pounce-track .22s cubic-bezier(.12,.9,.18,1) infinite alternate!important;
+}
+@keyframes bloop-mouse-pounce-track{
+  from{transform:translate(-9px,3px) rotate(-7deg) scale(.86,1.04)}
+  to{transform:translate(10px,-3px) rotate(7deg) scale(1.04,.92)}
+}
+@media(prefers-reduced-motion:reduce){
+  .bloop-2d-host.bloop-object-moving[data-bloop-object-kind] .bloop-2d-sprite{animation:none!important}
+}
+
+
+/* Direction-aware tracking: the companion leans into the object's real motion. */
+.bloop-2d-host.bloop-object-moving .bloop-2d-sprite{
+  --bloop-motion-x:0px;
+  --bloop-motion-y:0px;
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="cup"] .bloop-2d-sprite{
+  animation-name:bloop-cup-follow-direction!important;
+}
+@keyframes bloop-cup-follow-direction{
+  from{transform:translate(calc(-3px + var(--bloop-motion-x)*.18),calc(-1px + var(--bloop-motion-y)*.10)) rotate(calc(-3deg + var(--bloop-motion-lean))) scale(.9,.98)}
+  to{transform:translate(calc(4px + var(--bloop-motion-x)*.18),calc(2px + var(--bloop-motion-y)*.10)) rotate(calc(4deg + var(--bloop-motion-lean))) scale(.96,.92)}
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="bottle"] .bloop-2d-sprite{
+  animation-name:bloop-bottle-follow-direction!important;
+}
+@keyframes bloop-bottle-follow-direction{
+  from{transform:translateX(calc(-2px + var(--bloop-motion-x)*.22)) rotate(calc(-9deg + var(--bloop-motion-lean))) skewY(-2deg) scale(.72,1.12)}
+  to{transform:translateX(calc(3px + var(--bloop-motion-x)*.22)) rotate(calc(9deg + var(--bloop-motion-lean))) skewY(2deg) scale(.7,1.16)}
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="tv"] .bloop-2d-sprite{
+  animation-name:bloop-remote-follow-direction!important;
+}
+@keyframes bloop-remote-follow-direction{
+  from{transform:translate(calc(-3px + var(--bloop-motion-x)*.16),calc(var(--bloop-motion-y)*.08)) rotate(calc(-3deg + var(--bloop-motion-lean))) scale(.88,1.02)}
+  to{transform:translate(calc(4px + var(--bloop-motion-x)*.16),calc(var(--bloop-motion-y)*.08)) rotate(calc(3deg + var(--bloop-motion-lean))) scale(.94,1)}
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="teddy"] .bloop-2d-sprite{
+  animation-name:bloop-teddy-follow-direction!important;
+}
+@keyframes bloop-teddy-follow-direction{
+  from{transform:translate(calc(var(--bloop-motion-x)*.12),calc(2px + var(--bloop-motion-y)*.10)) rotate(calc(-3deg + var(--bloop-motion-lean))) scale(.97)}
+  to{transform:translate(calc(var(--bloop-motion-x)*.12),calc(-4px + var(--bloop-motion-y)*.10)) rotate(calc(3deg + var(--bloop-motion-lean))) scale(1.03)}
+}
+.bloop-2d-host.bloop-object-moving[data-bloop-object-kind="mouse"] .bloop-2d-sprite{
+  animation-name:bloop-mouse-follow-direction!important;
+}
+@keyframes bloop-mouse-follow-direction{
+  from{transform:translate(calc(-9px + var(--bloop-motion-x)*.35),calc(3px + var(--bloop-motion-y)*.18)) rotate(calc(-7deg + var(--bloop-motion-lean)*1.2)) scale(.86,1.04)}
+  to{transform:translate(calc(10px + var(--bloop-motion-x)*.35),calc(-3px + var(--bloop-motion-y)*.18)) rotate(calc(7deg + var(--bloop-motion-lean)*1.2)) scale(1.04,.92)}
+}
+@media(prefers-reduced-motion:reduce){
+  .bloop-2d-host.bloop-object-moving[data-bloop-object-kind] .bloop-2d-sprite{animation:none!important}
+}
+
+/* Autonomous personality moments. */
+.bloop-2d-host.bloop-fidget .bloop-2d-sprite{animation:bloop-fidget .72s cubic-bezier(.2,.85,.2,1) 1!important}
+@keyframes bloop-fidget{0%{transform:translateY(0) rotate(0) scale(1)}28%{transform:translateY(-5px) rotate(-3deg) scale(.97,1.04)}58%{transform:translateY(1px) rotate(3deg) scale(1.03,.96)}82%{transform:translateY(-2px) rotate(-1deg) scale(.99,1.01)}100%{transform:none}}
+.bloop-2d-host.bloop-curious-look .bloop-2d-sprite{animation:bloop-curious-look .62s cubic-bezier(.18,.8,.2,1) 1!important}
+@keyframes bloop-curious-look{0%{transform:translateX(0) rotate(0)}38%{transform:translateX(-7px) rotate(-4deg)}72%{transform:translateX(5px) rotate(3deg)}100%{transform:none}}
+.bloop-2d-host.bloop-celebration-pop .bloop-2d-sprite{animation:bloop-celebration-pop .7s cubic-bezier(.12,.9,.2,1) 1!important}
+@keyframes bloop-celebration-pop{0%{transform:scale(.92)}32%{transform:translateY(-12px) scale(1.12)}55%{transform:translateY(1px) scale(.96)}76%{transform:translateY(-5px) scale(1.06)}100%{transform:none}}
+@media(prefers-reduced-motion:reduce){.bloop-2d-host.bloop-fidget .bloop-2d-sprite,.bloop-2d-host.bloop-curious-look .bloop-2d-sprite,.bloop-2d-host.bloop-celebration-pop .bloop-2d-sprite{animation:none!important}}
+
+/* Notice -> focus -> chase: Bloop briefly reacts toward the detected object first. */
+.bloop-2d-host.bloop-attention .bloop-2d-sprite{
+  animation:bloop-attention .36s cubic-bezier(.18,.9,.2,1) 1!important;
+}
+@keyframes bloop-attention{
+  0%{transform:translateY(0) rotate(0) scale(1)}
+  32%{transform:translateY(-5px) rotate(var(--bloop-attention-lean,0deg)) scale(1.04,1.02)}
+  62%{transform:translateY(-1px) rotate(calc(var(--bloop-attention-lean,0deg)*.72)) scale(.98,1.04)}
+  100%{transform:none}
+}
+@media(prefers-reduced-motion:reduce){
+  .bloop-2d-host.bloop-attention .bloop-2d-sprite{animation:none!important}
+}
+/* Bloop lets go with a tiny springy hop after an interaction. */
+.bloop-2d-host.bloop-release .bloop-2d-sprite{
+  animation:bloop-release .52s cubic-bezier(.14,.92,.2,1) 1!important;
+}
+@keyframes bloop-release{
+  0%{transform:translateY(0) scale(1)}
+  28%{transform:translateY(-12px) scale(1.08,.94)}
+  58%{transform:translateY(1px) scale(.94,1.06)}
+  78%{transform:translateY(-4px) scale(1.03,.98)}
+  100%{transform:none}
+}
+@media(prefers-reduced-motion:reduce){.bloop-2d-host.bloop-release .bloop-2d-sprite{animation:none!important}}
+
+#bloop-toast{position:absolute;left:50%;top:10%;transform:translate(-50%,-12px) scale(.92);min-width:170px;max-width:78%;padding:9px 14px;border-radius:16px;background:rgba(255,255,255,.94);box-shadow:0 8px 24px rgba(0,0,0,.12);text-align:center;opacity:0;pointer-events:none;z-index:20;transition:opacity .22s ease,transform .32s cubic-bezier(.2,.9,.2,1)}
+#bloop-toast span{display:block;font-size:.76rem;margin-top:2px}
+#bloop-toast.show{opacity:1;transform:translate(-50%,0) scale(1)}
+@media(prefers-reduced-motion:reduce){#bloop-toast{transition:none}}
+
+
+/* Interaction architecture: one dedicated transform personality layer.
+   Object-specific rules below this point intentionally own the active sprite
+   animation so older generic movement rules cannot win the cascade. */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"] .bloop-2d-sprite,
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"] .bloop-2d-sprite,
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="tv"] .bloop-2d-sprite,
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="teddy"] .bloop-2d-sprite{
+  transform-origin:50% 70%;
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"] .bloop-2d-sprite{animation-name:bloop-active-cup!important}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"] .bloop-2d-sprite{animation-name:bloop-active-bottle!important}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="tv"] .bloop-2d-sprite{animation-name:bloop-active-tv!important}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="teddy"] .bloop-2d-sprite{animation-name:bloop-active-teddy!important}
+@keyframes bloop-active-cup{
+  0%,100%{transform:translateY(0) scale(.94,.98)}
+  50%{transform:translateY(2px) scale(1.02,.9)}
+}
+@keyframes bloop-active-bottle{
+  0%,100%{transform:rotate(-4deg) scale(.72,1.1)}
+  50%{transform:rotate(4deg) scale(.68,1.15)}
+}
+@keyframes bloop-active-tv{
+  0%,100%{transform:rotate(-2deg) scale(.9,1.02)}
+  50%{transform:rotate(2deg) scale(.95,.98)}
+}
+@keyframes bloop-active-teddy{
+  0%,100%{transform:translateY(1px) scale(.98)}
+  50%{transform:translateY(-3px) scale(1.04)}
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"] .bloop-2d-sprite{
+  animation-name:bloop-active-mouse!important;
+}
+@keyframes bloop-active-mouse{
+  0%{transform:translate(-8px,3px) rotate(-7deg) scale(.88,1.03)}
+  50%{transform:translate(2px,-2px) rotate(2deg) scale(1.03,.95)}
+  100%{transform:translate(10px,1px) rotate(7deg) scale(.9,1.02)}
+}
+
+
+/* Playful interaction layer: mouse pounce and laptop typing stay visually
+   distinct from object transformations. */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"] .bloop-2d-sprite{
+  transform-origin:50% 86%;
+  animation:bloop-mouse-pounce 760ms cubic-bezier(.18,.82,.28,1) infinite!important;
+}
+@keyframes bloop-mouse-pounce{
+  0%,100%{transform:translate(-7px,2px) rotate(-6deg) scale(.9,1.02)}
+  25%{transform:translate(0,-7px) rotate(0) scale(1.03,.94)}
+  52%{transform:translate(9px,0) rotate(7deg) scale(.88,1.04)}
+  76%{transform:translate(2px,-4px) rotate(1deg) scale(1.02,.96)}
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="laptop"] .bloop-2d-sprite{
+  transform-origin:50% 90%;
+  animation:bloop-laptop-type 620ms ease-in-out infinite!important;
+}
+@keyframes bloop-laptop-type{
+  0%,100%{transform:translateY(1px) scale(.98,1.02) rotate(-1deg)}
+  25%{transform:translate(-2px,3px) scale(1.01,.98) rotate(1deg)}
+  50%{transform:translate(2px,2px) scale(.99,1.01) rotate(-1deg)}
+  75%{transform:translate(-1px,3px) scale(1.01,.98) rotate(1deg)}
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="laptop"]::after{
+  content:"";
+  position:absolute;
+  left:31%;right:31%;bottom:12%;
+  height:7%;
+  border-radius:999px;
+  background:currentColor;
+  opacity:.16;
+  animation:bloop-typing-shadow 620ms ease-in-out infinite;
+}
+@keyframes bloop-typing-shadow{
+  0%,100%{transform:scaleX(.8);opacity:.1}
+  50%{transform:scaleX(1.15);opacity:.2}
+}
+@media (prefers-reduced-motion:reduce){
+  .bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"] .bloop-2d-sprite,
+  .bloop-2d-host.bloop-object-attached[data-bloop-object-kind="laptop"] .bloop-2d-sprite,
+  .bloop-2d-host.bloop-object-attached[data-bloop-object-kind="laptop"]::after{
+    animation:none!important;
+  }
+}
+
+
+/* Vehicle personality: acceleration is expressed through lean, squash and
+   directional speed streaks rather than simply scaling the sprite. */
+.bloop-2d-host.bloop-vehicle-boost{
+  animation:bloop-vehicle-boost 980ms cubic-bezier(.12,.9,.2,1) both!important;
+  filter:drop-shadow(0 7px 10px rgba(255,160,40,.18));
+}
+.bloop-2d-host.bloop-vehicle-boost::before,
+.bloop-2d-host.bloop-vehicle-boost::after{
+  content:"";
+  position:absolute;
+  top:46%;
+  width:34%;
+  height:5%;
+  border-radius:999px;
+  background:currentColor;
+  opacity:0;
+  pointer-events:none;
+}
+.bloop-2d-host.bloop-vehicle-boost::before{right:86%;transform-origin:right center}
+.bloop-2d-host.bloop-vehicle-boost::after{left:86%;transform-origin:left center}
+.bloop-2d-host.bloop-vehicle-boost[data-bloop-direction="left"]::before,
+.bloop-2d-host.bloop-vehicle-boost:not([data-bloop-direction="right"])::after{
+  animation:bloop-speed-streak-left 520ms ease-out both;
+}
+.bloop-2d-host.bloop-vehicle-boost[data-bloop-direction="right"]::after,
+.bloop-2d-host.bloop-vehicle-boost[data-bloop-direction="right"]::before{
+  animation:bloop-speed-streak-right 520ms ease-out both;
+}
+@keyframes bloop-vehicle-boost{
+  0%{transform:translateX(0) scale(.92,.98) rotate(0)}
+  18%{transform:translateX(0) scale(1.08,.9) rotate(var(--bloop-motion-lean,0deg))}
+  48%{transform:translateX(calc(var(--bloop-motion-x,0px)*.55)) scale(1.12,.86) rotate(var(--bloop-motion-lean,0deg))}
+  78%{transform:translateX(calc(var(--bloop-motion-x,0px)*.2)) scale(.96,1.03) rotate(var(--bloop-motion-lean,0deg))}
+  100%{transform:translateX(0) scale(1)}
+}
+@keyframes bloop-speed-streak-left{
+  0%{opacity:0;transform:scaleX(.15)}
+  35%{opacity:.28;transform:scaleX(1)}
+  100%{opacity:0;transform:translateX(-22px) scaleX(1.35)}
+}
+@keyframes bloop-speed-streak-right{
+  0%{opacity:0;transform:scaleX(.15)}
+  35%{opacity:.28;transform:scaleX(1)}
+  100%{opacity:0;transform:translateX(22px) scaleX(1.35)}
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="train"] .bloop-2d-sprite{
+  animation:bloop-vehicle-idle 420ms ease-in-out infinite!important;
+}
+@keyframes bloop-vehicle-idle{
+  0%,100%{transform:translateY(2px) rotate(-2deg) scale(.98,1.01)}
+  50%{transform:translateY(-4px) rotate(2deg) scale(1.04,.96)}
+}
+@media (prefers-reduced-motion:reduce){
+  .bloop-2d-host.bloop-vehicle-boost{animation:none!important;filter:none}
+  .bloop-2d-host.bloop-vehicle-boost::before,
+  .bloop-2d-host.bloop-vehicle-boost::after{animation:none!important}
+  .bloop-2d-host.bloop-object-attached[data-bloop-object-kind="train"] .bloop-2d-sprite{animation:none!important}
+}
+
+
+/* Vehicle release: a deliberate zoom-away arc restores Bloop's independent
+   companion personality after a moving-object interaction. */
+.bloop-2d-host.bloop-vehicle-release{
+  animation:bloop-vehicle-release 620ms cubic-bezier(.16,.8,.24,1) both!important;
+  z-index:9;
+}
+.bloop-2d-host.bloop-vehicle-release .bloop-2d-sprite{
+  animation:bloop-release-spin 620ms cubic-bezier(.16,.8,.24,1) both!important;
+}
+@keyframes bloop-vehicle-release{
+  0%{transform:translate(0,0) scale(1) rotate(0)}
+  35%{transform:translate(calc(var(--bloop-motion-x,0px)*.45),-22px) scale(1.08) rotate(calc(var(--bloop-motion-lean,0deg)*1.5))}
+  72%{transform:translate(calc(var(--bloop-motion-x,0px)*.85),-42px) scale(.82) rotate(calc(var(--bloop-motion-lean,0deg)*2))}
+  100%{transform:translate(calc(var(--bloop-motion-x,0px)*1.15),-12px) scale(.72) rotate(8deg)}
+}
+@keyframes bloop-release-spin{
+  0%{transform:rotate(0) scale(1)}
+  45%{transform:rotate(-7deg) scale(1.08,.92)}
+  100%{transform:rotate(10deg) scale(.9,1.02)}
+}
+.bloop-2d-host.bloop-vehicle-release::after{
+  content:"";
+  position:absolute;
+  left:10%;right:10%;top:45%;
+  height:7%;
+  border-radius:999px;
+  background:currentColor;
+  opacity:0;
+  transform-origin:center;
+  animation:bloop-release-streak 620ms ease-out both;
+  pointer-events:none;
+}
+@keyframes bloop-release-streak{
+  0%,20%{opacity:0;transform:scaleX(.2)}
+  55%{opacity:.24;transform:scaleX(1)}
+  100%{opacity:0;transform:scaleX(1.5) translateX(-12px)}
+}
+@media (prefers-reduced-motion:reduce){
+  .bloop-2d-host.bloop-vehicle-release,
+  .bloop-2d-host.bloop-vehicle-release .bloop-2d-sprite,
+  .bloop-2d-host.bloop-vehicle-release::after{animation:none!important}
+}

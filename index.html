@@ -294,6 +294,29 @@
     word-break: break-word;
   }
 </style>
+<link rel="stylesheet" href="./assets/bloop/bloop-2d.css">
+<style>
+.dex-replay{margin-top:7px;border:0;border-radius:999px;padding:5px 10px;background:rgba(255,255,255,.78);font:inherit;font-size:.72rem;font-weight:700;cursor:pointer}
+.dex-replay:active{transform:scale(.96)}
+.dex-item{position:relative;overflow:hidden;animation:dex-card-in 420ms cubic-bezier(.2,.85,.25,1) both}
+.dex-item:nth-child(2){animation-delay:35ms}.dex-item:nth-child(3){animation-delay:70ms}.dex-item:nth-child(4){animation-delay:105ms}.dex-item:nth-child(5){animation-delay:140ms}
+.dex-item b{display:flex;align-items:center;gap:6px}
+.dex-item b:first-letter{font-size:1.2em}
+.dex-item::after{content:"";position:absolute;right:-18px;top:-18px;width:54px;height:54px;border-radius:50%;background:rgba(255,255,255,.24);transform:scale(.6);opacity:0;transition:.25s}
+.dex-item:hover::after{transform:scale(1.25);opacity:1}
+.dex-replay{position:relative;z-index:1}
+@keyframes dex-card-in{
+  from{opacity:0;transform:translateY(10px) scale(.97)}
+  to{opacity:1;transform:translateY(0) scale(1)}
+}
+.bloop-new-discovery{animation:bloop-new-discovery-pop 620ms cubic-bezier(.2,.9,.25,1) both}
+@keyframes bloop-new-discovery-pop{
+  0%{transform:translate(-50%,10px) scale(.72);opacity:0}
+  55%{transform:translate(-50%,0) scale(1.06);opacity:1}
+  78%{transform:translate(-50%,0) scale(.97)}
+  100%{transform:translate(-50%,0) scale(1)}
+}
+</style>\n  <link rel="stylesheet" href="./assets/bloop/bloop-morph.css">
 </head>
 <body>
 <div id="debug-log"></div>
@@ -302,7 +325,7 @@
   <video id="camera-video" autoplay muted playsinline></video>
   <div id="cam-fallback"></div>
   <div id="scrim-top"></div>
-  <canvas id="three-canvas"></canvas>
+  <div id="bloop-character" class="bloop-2d-host" aria-label="Bloop"></div>
   <div id="scrim-bottom"></div>
 </div>
 
@@ -319,24 +342,26 @@
 </div>
 
 <div id="controls">
-  <div id="form-row">
-    <button class="form-btn active" data-form="blob" title="Blob">●</button>
-    <button class="form-btn" data-form="train" title="Train">🚂</button>
-    <button class="form-btn" data-form="laptop" title="Laptop">💻</button>
-    <button class="form-btn" data-form="letterbox" title="Letterbox">✉️</button>
-    <button class="form-btn" data-form="animal" title="Animal">🐰</button>
-    <button class="form-btn" data-form="utensil" title="Utensil">🥄</button>
+  <div id="form-row" aria-label="Bloop interactions">
+    <button class="form-btn active" data-form="blob" title="Bloop">🟠</button>
+    <button class="form-btn" data-form="train" title="Zoom with vehicles">🚗</button>
+    <button class="form-btn" data-form="laptop" title="Laptop play">💻</button>
+    <button class="form-btn" data-form="mouse" title="Chase a mouse">🖱️</button>
+    <button class="form-btn" data-form="cup" title="Cup slime">🥤</button>
+    <button class="form-btn" data-form="bottle" title="Bottle snake">🍾</button>
+    <button class="form-btn" data-form="tv" title="TV remote">📺</button>
+    <button class="form-btn" data-form="teddy" title="Person teddy">🧸</button>
   </div>
   <button id="scan-btn">SCAN</button>
   <div id="hint">Tiny. Fast. Curious. Bloop.</div>
 </div>
 
 
-<div id="bloopdex" aria-hidden="true">
+<div id="bloop-toast" aria-live="polite"></div>\n  <div id="bloopdex" aria-hidden="true">
   <div class="dex-card">
     <div class="dex-head"><strong>BLOOPDEX</strong><button id="dex-close" aria-label="Close">×</button></div>
-    <div class="dex-sub">Things Bloop has discovered on this device.</div>
-    <div id="dex-list"></div>
+    <div class="dex-sub">Things Bloop has discovered and how Bloop reacted.</div>
+    <div id="dex-count" aria-live="polite">0 discovered</div>\n  <div id="dex-list"></div>
   </div>
 </div>
 
@@ -347,13 +372,13 @@
     <div id="perm-body">Bloop uses your camera to look around and react to your world. Nothing is recorded or sent anywhere — it all happens on this page.</div>
     <button id="perm-btn">Turn on camera</button>
     <div id="perm-error" style="display:none; font-size:12.5px; color:#ffb08a; background:rgba(255,80,40,0.1); border:1px solid rgba(255,80,40,0.25); border-radius:10px; padding:9px 12px; text-align:left;"></div>
-    <div id="perm-note">You can still play with Bloop's forms without it.</div>
+    <div id="perm-note">You can still play with Bloop without the camera.</div>
   </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.20.0/dist/tf.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.3/dist/coco-ssd.min.js"></script>
+<script src="./assets/bloop/bloop-2d.js"></script>
 <script>
 (function () {
   "use strict";
@@ -374,7 +399,7 @@
     logError('promise rejection', e.reason);
   });
 
-  /* ---------------- Button wiring FIRST, independent of Three.js ---------------- */
+  /* ---------------- Interaction buttons ---------------- */
   // Attached immediately so taps are never silently dead even if the 3D scene fails below.
   document.querySelectorAll('.form-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -471,17 +496,59 @@
   let discoveries = {};
   try { discoveries = JSON.parse(localStorage.getItem(BLOOPDEX_KEY) || '{}'); } catch (_) {}
 
+  function showDiscoveryToast(objectName,reaction){
+    const toast=document.getElementById("bloop-toast");
+    if(!toast)return;
+    toast.innerHTML="✨ <b>"+objectName+"</b><span>"+reaction+"</span>";
+    toast.classList.add("show");
+    clearTimeout(window.__bloopToastTimer);
+    window.__bloopToastTimer=setTimeout(()=>toast.classList.remove("show"),1900);
+  }
+
   function rememberDiscovery(formName, objectName) {
-    discoveries[objectName] = { form: formName, firstSeen: Date.now() };
+    const isNew=!discoveries[objectName];
+    discoveries[objectName] = { form: formName, firstSeen: discoveries[objectName]?.firstSeen || Date.now() };
     try { localStorage.setItem(BLOOPDEX_KEY, JSON.stringify(discoveries)); } catch (_) {}
+    if(isNew) showFirstDiscoveryCelebration(objectName,formName);
+  }
+  function showFirstDiscoveryCelebration(objectName,formName){
+    const toast=document.getElementById("bloop-toast");
+    if(!toast)return;
+    const info=DISCOVERY_INFO[formName]||DISCOVERY_INFO.blob;
+    toast.innerHTML="🎉 <b>New Bloop discovery!</b><span>"+info[0]+" "+objectName+" · "+info[1]+"</span>";
+    toast.classList.remove("bloop-new-discovery");
+    void toast.offsetWidth;
+    toast.classList.add("bloop-new-discovery");
+    clearTimeout(window.__bloopToastTimer);
+    window.__bloopToastTimer=setTimeout(()=>toast.classList.remove("show","bloop-new-discovery"),2600);
   }
 
   const dex = document.getElementById('bloopdex');
   const dexList = document.getElementById('dex-list');
+  const DISCOVERY_INFO={
+  cup:["🥤","slime inside it","Bloop melts into cups like a tiny slime creature."],
+  bottle:["🍾","snake wrap","Bloop stretches and curls around bottles."],
+  tv:["📺","remote mode","Bloop turns into a playful remote."],
+  teddy:["🧸","teddy mode","Bloop cuddles into a soft teddy-like form."],
+  mouse:["🖱️","chase mode","Bloop gets excited and chases the mouse."],
+  laptop:["💻","typing mode","Bloop hops onto the laptop and gets busy."],
+  train:["🚗","zoom mode","Bloop goes super fast with moving vehicles."],
+  blob:["✨","curious","Bloop doesn't know this one yet — but it's interested."]
+};
   function renderDex() {
-    const entries = Object.entries(discoveries);
+    const entries = Object.entries(discoveries).sort((a,b)=>(b[1].firstSeen||0)-(a[1].firstSeen||0));
+    const countEl=document.getElementById("dex-count"); if(countEl) countEl.textContent=entries.length+" discovered";
     dexList.innerHTML = entries.length
-      ? entries.map(([name, d]) => `<div class="dex-item"><b>${name}</b><span>${d.form} Bloop</span></div>`).join('')
+      ? entries.map(([name,d])=>{
+          const info=DISCOVERY_INFO[d.form]||DISCOVERY_INFO.blob;
+          const safeName=String(name).replace(/[^a-zA-Z0-9 _-]/g,'').trim();
+          const safeForm=String(d.form||'blob').replace(/[^a-zA-Z0-9_-]/g,'');
+          return `<div class="dex-item" data-dex-form="${safeForm}" data-dex-name="${safeName}">
+            <b>${info[0]} ${name}</b>
+            <span><strong>${info[1]}</strong> · ${info[2]}</span>
+            <button class="dex-replay" type="button" aria-label="Replay ${safeName}">▶ Replay</button>
+          </div>`;
+        }).join('')
       : `<div class="dex-item" style="grid-column:1/-1"><b>No discoveries yet</b><span>Point Bloop at something and tap Scan.</span></div>`;
   }
   document.getElementById('dex-btn').addEventListener('click', () => {
@@ -490,523 +557,97 @@
   document.getElementById('dex-close').addEventListener('click', () => {
     dex.classList.remove('open'); dex.setAttribute('aria-hidden','true');
   });
-  dex.addEventListener('click', e => { if (e.target === dex) dex.classList.remove('open'); });
-
-  /* ---------------- Three.js scene ---------------- */
-  try {
-  if (typeof THREE === 'undefined') throw new Error('THREE failed to load from CDN (network/ad-block?)');
-  const canvas = document.getElementById('three-canvas');
-  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
-  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(38, window.innerWidth / window.innerHeight, 0.1, 100);
-  camera.position.set(0, 0.15, 6);
-
-  function resize() {
-    const w = window.innerWidth, h = window.innerHeight;
-    renderer.setSize(w, h);
-    camera.aspect = w / h;
-    camera.updateProjectionMatrix();
-  }
-  window.addEventListener('resize', resize);
-  resize();
-
-  scene.add(new THREE.AmbientLight(0x3a2a4a, 1.1));
-  const key = new THREE.PointLight(0xffb066, 2.4, 12);
-  key.position.set(1.5, 2, 3);
-  scene.add(key);
-  const rim = new THREE.PointLight(0x6ee7b7, 0.7, 12);
-  rim.position.set(-2, -1, 2);
-  scene.add(rim);
-
-  const amberMat = new THREE.MeshStandardMaterial({
-    color: 0xff8618,
-    emissive: 0x5a2100,
-    emissiveIntensity: 0.16,
-    roughness: 0.30,
-    metalness: 0.02,
-  });
-  const amberMatDeep = new THREE.MeshStandardMaterial({
-    color: 0xe07a12,
-    emissive: 0x7a3600,
-    emissiveIntensity: 0.3,
-    roughness: 0.35,
-  });
-  const darkMat = new THREE.MeshStandardMaterial({ color: 0x241a12, roughness: 0.6 });
-  const glassMat = new THREE.MeshStandardMaterial({
-    color: 0xffe3b0, emissive: 0xffb066, emissiveIntensity: 0.6, roughness: 0.15,
+  dex.addEventListener('click', e => {
+    if (e.target === dex) { dex.classList.remove('open'); return; }
+    const replay=e.target.closest('.dex-replay');
+    if(!replay) return;
+    const item=replay.closest('.dex-item');
+    if(!item) return;
+    const form=item.dataset.dexForm||'blob';
+    const name=item.dataset.dexName||'object';
+    const message=formLines[form]||('✨ Bloop replaying '+name+'!');
+    bloop2d.react(form,message);
+    say(message,2800);
   });
 
-  const bloopRoot = new THREE.Group();
-  bloopRoot.position.set(0, -0.58, 0);
-  scene.add(bloopRoot);
-
-  /* --- tiny deterministic pseudo-noise (no external lib needed) --- */
-  function wobble(x, y, z, t) {
-    return (
-      Math.sin(x * 2.1 + t * 1.3) * 0.06 +
-      Math.sin(y * 2.6 + t * 1.7 + x) * 0.05 +
-      Math.sin(z * 1.9 + t * 1.1 + y) * 0.05
-    );
+  /* ---------------- Bloop 2D renderer + object detection ---------------- */
+  const bloopHost=document.getElementById('bloop-character'),bloop2d=new Bloop2D(bloopHost,'./assets/bloop/');
+  window.__bloop2d=bloop2d;
+  const formLines={blob:"Just me, Bloop. Ready for anything.",train:"ZOOM ZOOM! Bloop found something with wheels.",laptop:"Ooh! Bloop found a laptop.",mouse:"👀 Mouse spotted! Chase mode!",cup:"🥤 Cup spotted! Slime mode!",bottle:"🍾 Bottle spotted! Snake mode!",tv:"📺 TV spotted! Remote mode!",teddy:"🧸 Person spotted! Teddy mode!"};
+  function morphTo(name,caption){document.querySelectorAll('.form-btn').forEach(b=>b.classList.toggle('active',b.dataset.form===name));bloop2d.react(name,caption||formLines[name]||'Bloop!');if(caption)say(caption,3600)}
+  window.__bloopMorphTo=true;window.__bloopMorphReq=name=>morphTo(name,formLines[name]);
+  // Manual buttons preview Bloop's interaction personalities without pretending Bloop is a different character.
+  // Camera scanning remains object-first and can discover additional objects automatically.
+  const scanBtn=document.getElementById('scan-btn');let model=null;let bloopTrackTimer=null;let bloopTrackStopTimer=null;
+  /* Detection is object-first: the vision model identifies the thing, while Bloop stays Bloop. Only a few objects get special behavior; everything else gets a generic curious reaction. */
+  const SPECIAL_REACTIONS={mouse:'mouse',laptop:'laptop',tv:'tv',cup:'cup',bottle:'bottle',person:'teddy',train:'train',bicycle:'train',motorcycle:'train',car:'train',bus:'train',truck:'train',skateboard:'train',surfboard:'train',skis:'train',snowboard:'train'};
+  const REACTIONS={mouse:n=>'👀 Bloop spotted a <b>'+n+'</b>! Chase mode!',laptop:n=>'Ooh! Bloop found a <b>'+n+'</b>!',tv:n=>'📺 Bloop sees a <b>'+n+'</b> and becomes a remote!',cup:n=>'🥤 Bloop melts into the <b>'+n+'</b> like slime!',bottle:n=>'🍾 Bloop wraps around the <b>'+n+'</b> like a snake!',teddy:n=>'🧸 Bloop sees a <b>'+n+'</b> and turns into a teddy bear!',train:n=>'👀 <b>'+n+'</b>! Bloop goes ZOOM ZOOM!'};
+  const OBJECT_ALIASES={remote:'tv',cell_phone:'laptop',book:'blob',keyboard:'laptop',chair:'blob',couch:'blob',backpack:'blob',bowl:'cup',wine_glass:'cup',dining_table:'blob',potted_plant:'blob',bicycle:'train',motorcycle:'train'};
+  const NEUTRAL=["Bloop looked around and mostly saw vibes. Try pointing at something specific.","Nothing screamed 'transform me' just yet — scan again?","Bloop is thinking very hard about that. Still just a blob though."];
+  async function loadModel(){try{setStatus('scanning','loading brain');if(typeof cocoSsd==='undefined'||typeof tf==='undefined')throw new Error('AI library failed to load from CDN');model=await cocoSsd.load({base:'lite_mobilenet_v2'});setStatus(cameraReady?'ready':'idle',cameraReady?'ready':'no camera');scanBtn.disabled=false}catch(e){console.error('Model load failed:',e);setStatus(cameraReady?'ready':'idle',cameraReady?'ready':'no camera');scanBtn.disabled=false;say("Bloop's vision model couldn't load. Check your connection, then reload.",5000)}}
+  scanBtn.disabled=true;loadModel();
+  async function scanRoom(){if(scanBtn.classList.contains('scanning'))return;scanBtn.classList.add('scanning');setStatus('scanning','scanning…');bloop2d.play('thinking');if(!cameraReady){const ok=await startCamera();if(!ok){scanBtn.classList.remove('scanning');bloop2d.play('idle');return}}if(!model){say("Bloop's brain is still waking up. Give it a moment and scan again.",2800);scanBtn.classList.remove('scanning');setStatus('scanning','loading brain');return}try{if(video.readyState<2){say("Camera's still warming up — give it a second and tap Scan again.",2800)}else{const preds=await model.detect(video),good=preds.filter(p=>p.score>0.38).sort((a,b)=>b.score-a.score);if(!good.length){say(NEUTRAL[Math.floor(Math.random()*NEUTRAL.length)],3200);bloop2d.play('curious',{next:'idle'})}else{const top=good[0],key=String(top.class).trim().toLowerCase(),normalized=OBJECT_ALIASES[key]||key,special=SPECIAL_REACTIONS[normalized]||null; const shouldInteract=true; if(shouldInteract){const [bx,by,bw,bh]=top.bbox||[0,0,0,0];const cx=bx+bw/2,cy=by+bh/2;const host=document.getElementById("bloop-character");if(host){const hostRect=host.parentElement.getBoundingClientRect(),videoRect=video.getBoundingClientRect();const vw=video.videoWidth||video.clientWidth||1,vh=video.videoHeight||video.clientHeight||1,scale=Math.max(videoRect.width/vw,videoRect.height/vh),renderedW=vw*scale,renderedH=vh*scale,cropX=(renderedW-videoRect.width)/2,cropY=(renderedH-videoRect.height)/2;const targetX=videoRect.left+cx*scale-cropX,targetY=videoRect.top+cy*scale-cropY;const targetW=Math.max(54,Math.min(260,bw*scale)),targetH=Math.max(54,Math.min(260,bh*scale));const centerX=hostRect.left+hostRect.width/2,centerY=hostRect.top+hostRect.height/2;const chaseX=Math.max(-Math.min(150,hostRect.width*.95),Math.min(150,targetX-centerX));const chaseY=Math.max(-Math.min(95,hostRect.height*.6),Math.min(95,targetY-centerY));host.style.setProperty("--bloop-chase-x",chaseX.toFixed(0)+"px");host.style.setProperty("--bloop-chase-y",chaseY.toFixed(0)+"px");host.style.setProperty("--bloop-attention-lean",Math.max(-14,Math.min(14,(targetX-centerX)*.045)).toFixed(1)+"deg");host.classList.remove("bloop-attention");void host.offsetWidth;host.classList.add("bloop-attention");setTimeout(()=>host.classList.remove("bloop-attention"),360);host.style.setProperty("--bloop-object-x",targetX.toFixed(0)+"px");host.style.setProperty("--bloop-object-y",targetY.toFixed(0)+"px");host.style.setProperty("--bloop-object-w",targetW.toFixed(0)+"px");host.style.setProperty("--bloop-object-h",targetH.toFixed(0)+"px");const objectScale=Math.max(.55,Math.min(1.8,Math.sqrt((targetW*targetH)/(150*150))));host.style.setProperty("--bloop-object-scale",objectScale.toFixed(3));host.style.setProperty("--bloop-transform-w",Math.max(92,Math.min(240,targetW*(special==="cup"?.72:special==="bottle"?.46:special==="tv"?.30:special==="teddy"?.68:objectScale))).toFixed(0)+"px");host.style.setProperty("--bloop-transform-h",Math.max(92,Math.min(240,targetH*(special==="cup"?.58:special==="bottle"?.94:special==="tv"?.68:special==="teddy"?.68:objectScale))).toFixed(0)+"px");host.style.setProperty("--bloop-object-kind",special||"generic");const anchorY=special==="cup"?.84:special==="bottle"?.52:special==="tv"?.86:special==="teddy"?.54:special==="mouse"?.50:.50;const anchorX=special==="cup"?.50:special==="bottle"?.50:special==="tv"?.50:special==="teddy"?.50:special==="mouse"?.52:.50;host.style.setProperty("--bloop-object-anchor-x",anchorX);host.style.setProperty("--bloop-object-anchor-y",anchorY);host.classList.add("bloop-chasing");bloop2d.play("dash",{next:"idle"});setTimeout(()=>{host.classList.remove("bloop-chasing");host.classList.add("bloop-object-attached");bloop2d.react(special||"blob",special&&REACTIONS[special]?REACTIONS[special](top.class):"👀 Bloop spotted a <b>"+top.class+"</b>!");setTimeout(()=>{try{window.dispatchEvent(new CustomEvent("bloop-reaction-complete",{detail:{object:key,reaction:special||"curious"}}))}catch(e){}},3100);let trackX=targetX,trackY=targetY,trackW=targetW,trackH=targetH,prevRawX=targetX,prevRawY=targetY,motionX=0,motionY=0,misses=0;const trackUntil=Date.now()+3400;if(bloopTrackTimer)clearInterval(bloopTrackTimer);if(bloopTrackStopTimer)clearTimeout(bloopTrackStopTimer);const trackTimer=setInterval(async()=>{if(Date.now()>=trackUntil){clearInterval(trackTimer);return}try{const live=await model.detect(video);const match=live.filter(p=>p.score>0.30&&String(p.class).trim().toLowerCase()===key).sort((a,b)=>b.score-a.score)[0];if(!match){misses++;if(misses>=3){clearInterval(trackTimer)}return}misses=0;const [lx,ly,lw,lh]=match.bbox||[0,0,0,0],lcx=lx+lw/2,lcy=ly+lh/2,lvw=video.videoWidth||video.clientWidth||1,lvh=video.videoHeight||video.clientHeight||1,lscale=Math.max(videoRect.width/lvw,videoRect.height/lvh),lrenderedW=lvw*lscale,lrenderedH=lvh*lscale,lcropX=(lrenderedW-videoRect.width)/2,lcropY=(lrenderedH-videoRect.height)/2,rawX=videoRect.left+lcx*lscale-lcropX,rawY=videoRect.top+lcy*lscale-lcropY,rawW=Math.max(54,Math.min(260,lw*lscale)),rawH=Math.max(54,Math.min(260,lh*lscale));const vx=Math.max(-18,Math.min(18,rawX-prevRawX)),vy=Math.max(-18,Math.min(18,rawY-prevRawY));prevRawX=rawX;prevRawY=rawY;motionX+=(vx-motionX)*.42;motionY+=(vy-motionY)*.42;const lean=Math.max(-12,Math.min(12,motionX*.72));host.style.setProperty("--bloop-motion-x",motionX.toFixed(1)+"px");host.style.setProperty("--bloop-motion-y",motionY.toFixed(1)+"px");host.style.setProperty("--bloop-motion-lean",lean.toFixed(1)+"deg");trackX+=(rawX-trackX)*.32;trackY+=(rawY-trackY)*.32;trackW+=(rawW-trackW)*.24;trackH+=(rawH-trackH)*.24;const liveScale=Math.max(.55,Math.min(1.8,Math.sqrt((trackW*trackH)/(150*150))));const liveW=Math.max(92,Math.min(240,trackW*(special==="cup"?.72:special==="bottle"?.46:special==="tv"?.30:special==="teddy"?.68:liveScale)));const liveH=Math.max(92,Math.min(240,trackH*(special==="cup"?.58:special==="bottle"?.94:special==="tv"?.68:special==="teddy"?.68:liveScale)));host.style.setProperty("--bloop-object-x",trackX.toFixed(0)+"px");host.style.setProperty("--bloop-object-y",trackY.toFixed(0)+"px");host.style.setProperty("--bloop-object-w",trackW.toFixed(0)+"px");host.style.setProperty("--bloop-object-h",trackH.toFixed(0)+"px");host.style.setProperty("--bloop-object-scale",liveScale.toFixed(3));host.style.setProperty("--bloop-transform-w",liveW.toFixed(0)+"px");host.style.setProperty("--bloop-transform-h",liveH.toFixed(0)+"px");host.classList.toggle("bloop-object-moving",Math.abs(rawX-trackX)>10||Math.abs(rawY-trackY)>10)}catch(_){}} ,280);bloopTrackTimer=trackTimer;bloopTrackStopTimer=setTimeout(()=>{clearInterval(trackTimer);bloopTrackTimer=null;bloopTrackStopTimer=null;host.classList.add("bloop-release");setTimeout(()=>host.classList.remove("bloop-release","bloop-object-attached","bloop-object-moving"),520)},3400)},920)}rememberDiscovery(special||'blob',top.class);morphTo(special||'blob',special&&REACTIONS[special]?REACTIONS[special](top.class):'🔎 Bloop is curious about <b>'+top.class+'</b>!');}}}}catch(e){console.error('Scan failed:',e);say("Bloop blinked and missed that one ("+(e.message||'unknown error')+"). Try again?",3200);bloop2d.play('surprised',{next:'idle'})}scanBtn.classList.remove('scanning');setStatus('ready','ready')}
+  // Bloop companion interaction: follows the user's pointer/touch without blocking the AR camera.
+  let bloopFollowTimer=null;
+  function moveBloopToward(clientX,clientY){
+    if(!bloopHost)return;
+    const rect=bloopHost.parentElement.getBoundingClientRect();
+    const x=Math.max(14,Math.min(rect.width-14,clientX-rect.left));
+    const y=Math.max(14,Math.min(rect.height-14,clientY-rect.top));
+    bloopHost.style.setProperty('--bloop-pointer-x',((x/rect.width)*100).toFixed(1)+'%');
+    bloopHost.style.setProperty('--bloop-pointer-y',((y/rect.height)*100).toFixed(1)+'%');
+    bloopHost.classList.add('bloop-following');
+    clearTimeout(bloopFollowTimer);
+    bloopFollowTimer=setTimeout(()=>bloopHost.classList.remove('bloop-following'),900);
   }
+  window.addEventListener('pointermove',e=>moveBloopToward(e.clientX,e.clientY),{passive:true});
+  window.addEventListener('pointerdown',e=>{moveBloopToward(e.clientX,e.clientY);bloop2d.play('excited',{next:'idle'})},{passive:true});
 
-  /* --- Bloop face system ---
-     The face is deliberately oversized, soft and expressive to match the
-     reference character: huge white eyes, shiny pupils, eyebrows, smile,
-     teeth and pink tongue. The face is reused by every transformation so
-     Bloop always remains Bloop.
-  */
-  const faceParts = [];
-
-  function makeEye(scale, x, y, z) {
-    const g = new THREE.Group();
-
-    const white = new THREE.Mesh(
-      new THREE.SphereGeometry(0.185 * scale, 28, 20),
-      new THREE.MeshStandardMaterial({ color: 0xfff7ec, roughness: 0.28 })
-    );
-    white.scale.set(0.86, 1.12, 0.72);
-    white.position.set(x, y, z);
-
-    const pupil = new THREE.Mesh(
-      new THREE.SphereGeometry(0.095 * scale, 22, 18),
-      new THREE.MeshStandardMaterial({
-        color: 0x130d0c,
-        roughness: 0.2,
-        metalness: 0.02
-      })
-    );
-    pupil.position.set(x, y + 0.005 * scale, z + 0.135 * scale);
-
-    const highlight = new THREE.Mesh(
-      new THREE.SphereGeometry(0.028 * scale, 12, 10),
-      new THREE.MeshBasicMaterial({ color: 0xffffff })
-    );
-    highlight.position.set(x - 0.035 * scale, y + 0.055 * scale, z + 0.225 * scale);
-
-    g.add(white, pupil, highlight);
-    return { g, pupil, white, highlight };
-  }
-
-  function makeBrow(scale, x, y, z, tilt) {
-    const curve = new THREE.EllipseCurve(0, 0, 0.13 * scale, 0.055 * scale, Math.PI * 0.08, Math.PI * 0.92, false, 0);
-    const pts = curve.getPoints(12);
-    const geo = new THREE.BufferGeometry().setFromPoints(
-      pts.map(p => new THREE.Vector3(p.x, p.y, 0))
-    );
-    const mat = new THREE.LineBasicMaterial({ color: 0x17100d, linewidth: 4 });
-    const line = new THREE.Line(geo, mat);
-    line.position.set(x, y, z);
-    line.rotation.z = tilt;
-    line.scale.set(1, 1, 1);
-    return line;
-  }
-
-  function makeMouth(scale, expression = "happy") {
-    const g = new THREE.Group();
-
-    const mouth = new THREE.Mesh(
-      new THREE.SphereGeometry(0.25 * scale, 24, 18),
-      new THREE.MeshStandardMaterial({ color: 0x24100c, roughness: 0.45 })
-    );
-    mouth.scale.set(1.02, expression === "happy" ? 0.64 : 0.48, 0.34);
-    mouth.position.set(0, -0.22 * scale, 1.08 * scale);
-
-    const toothMat = new THREE.MeshStandardMaterial({ color: 0xfffaf0, roughness: 0.3 });
-    const toothL = new THREE.Mesh(new THREE.SphereGeometry(0.075 * scale, 14, 12), toothMat);
-    toothL.scale.set(0.8, 1.25, 0.65);
-    toothL.position.set(-0.075 * scale, -0.105 * scale, 1.18 * scale);
-
-    const toothR = toothL.clone();
-    toothR.position.x = 0.075 * scale;
-
-    const tongue = new THREE.Mesh(
-      new THREE.SphereGeometry(0.11 * scale, 16, 12),
-      new THREE.MeshStandardMaterial({ color: 0xff6f75, roughness: 0.3 })
-    );
-    tongue.scale.set(1.05, 0.58, 0.7);
-    tongue.position.set(0, -0.315 * scale, 1.18 * scale);
-
-    g.add(mouth, toothL, toothR, tongue);
-    return g;
-  }
-
-  function makeBloopFace(scale = 1, mood = "happy") {
-    const g = new THREE.Group();
-
-    const left = makeEye(scale, -0.235 * scale, 0.12 * scale, 1.03 * scale);
-    const right = makeEye(scale, 0.235 * scale, 0.12 * scale, 1.03 * scale);
-
-    const browL = makeBrow(scale, -0.23 * scale, 0.40 * scale, 1.03 * scale, 0.18);
-    const browR = makeBrow(scale, 0.23 * scale, 0.40 * scale, 1.03 * scale, -0.18);
-
-    g.add(left.g, right.g, browL, browR, makeMouth(scale, mood));
-    g.userData.leftPupil = left.pupil;
-    g.userData.rightPupil = right.pupil;
-    g.userData.leftWhite = left.white;
-    g.userData.rightWhite = right.white;
-    faceParts.push(g);
-    return g;
-  }
-
-  /* --- FORM: blob (idle) --- */
-  const blobGeo = new THREE.SphereGeometry(1.0, 56, 36);
-  const bp = blobGeo.attributes.position;
-  for (let i = 0; i < bp.count; i++) {
-    const x = bp.getX(i), y = bp.getY(i), z = bp.getZ(i);
-    const lower = Math.max(0, (-y + 0.10) * 0.30);
-    bp.setX(i, x * (1.02 + 0.04 * Math.abs(x)));
-    bp.setY(i, y * (0.98 - lower));
-    bp.setZ(i, z * (1.0 + 0.05 * Math.max(0, y)));
-  }
-  const blobBase = bp.array.slice();
-  const blobMesh = new THREE.Mesh(blobGeo, amberMat);
-  blobMesh.scale.set(0.82, 0.82, 0.72);
-
-  const formBlob = new THREE.Group();
-  formBlob.scale.set(1.0, 1.0, 1.0);
-
-  // Tiny feet/nubs: these make Bloop read as a fast little creature rather than an octopus.
-  const footGeo = new THREE.SphereGeometry(0.28, 28, 20);
-  const footL = new THREE.Mesh(footGeo, amberMat);
-  const footR = new THREE.Mesh(footGeo, amberMat);
-  footL.scale.set(1.15, 0.46, 0.85);
-  footR.scale.set(1.15, 0.46, 0.85);
-  footL.position.set(-0.42, -0.60, 0.02);
-  footR.position.set(0.42, -0.60, 0.02);
-
-  const cheekMat = new THREE.MeshStandardMaterial({ color: 0xffa83b, emissive: 0xff6b0b, emissiveIntensity: 0.12, roughness: 0.28 });
-  const cheekL = new THREE.Mesh(new THREE.SphereGeometry(0.10, 18, 14), cheekMat);
-  const cheekR = cheekL.clone();
-  cheekL.position.set(-0.40, -0.03, 0.70);
-  cheekR.position.set(0.40, -0.03, 0.70);
-
-  const blobFace = makeBloopFace(0.78, "happy");
-  blobFace.position.set(0, 0.03, 0.33);
-  formBlob.add(blobMesh, footL, footR, cheekL, cheekR, blobFace);
-
-  /* --- FORM: train --- */
-  const formTrain = new THREE.Group();
-  {
-    const body = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.75, 0.85), amberMat);
-    const cab = new THREE.Mesh(new THREE.BoxGeometry(0.6, 0.5, 0.85), amberMatDeep);
-    cab.position.set(0.55, 0.6, 0);
-    const wheelGeo = new THREE.CylinderGeometry(0.22, 0.22, 0.95, 16);
-    const wheelMat = new THREE.MeshStandardMaterial({ color: 0x2a1e14, roughness: 0.6 });
-    const w1 = new THREE.Mesh(wheelGeo, wheelMat); w1.rotation.z = Math.PI / 2; w1.position.set(-0.5, -0.5, 0);
-    const w2 = w1.clone(); w2.position.x = 0.5;
-    const stack = new THREE.Mesh(new THREE.CylinderGeometry(0.08, 0.1, 0.4, 10), darkMat);
-    stack.position.set(-0.5, 0.65, 0);
-    const eyes = makeBloopFace(0.9, "happy"); eyes.position.set(0, 0.05, 0.35);
-    formTrain.add(body, cab, w1, w2, stack, eyes);
-  }
-
-  /* --- FORM: laptop --- */
-  const formLaptop = new THREE.Group();
-  {
-    const base = new THREE.Mesh(new THREE.BoxGeometry(1.5, 0.09, 1.0), amberMat);
-    base.position.y = -0.3;
-    const screen = new THREE.Mesh(new THREE.BoxGeometry(1.5, 1.0, 0.08), amberMatDeep);
-    screen.position.set(0, 0.18, -0.46);
-    screen.rotation.x = -0.35;
-    const panel = new THREE.Mesh(new THREE.PlaneGeometry(1.28, 0.8), glassMat);
-    panel.position.set(0, 0.18, -0.41);
-    panel.rotation.x = -0.35;
-    const eyes = makeBloopFace(0.8, "happy"); eyes.position.set(0, -0.24, 0.25);
-    formLaptop.add(base, screen, panel, eyes);
-  }
-
-  /* --- FORM: letterbox --- */
-  const formLetterbox = new THREE.Group();
-  {
-    const body = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 1.3, 20, 1, false, 0, Math.PI), amberMat);
-    body.rotation.z = Math.PI / 2;
-    body.rotation.y = Math.PI / 2;
-    const post = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.9, 0.14), darkMat);
-    post.position.y = -0.85;
-    const slot = new THREE.Mesh(new THREE.BoxGeometry(0.9, 0.06, 0.05), darkMat);
-    slot.position.set(0, 0.1, 0.5);
-    const flag = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.3, 0.06), amberMatDeep);
-    flag.position.set(0.6, 0.3, 0);
-    const eyes = makeBloopFace(0.85, "happy"); eyes.position.set(0, 0.05, 0.2);
-    formLetterbox.add(body, post, slot, flag, eyes);
-  }
-
-  /* --- FORM: animal (bunny-ish) --- */
-  const formAnimal = new THREE.Group();
-  {
-    const body = new THREE.Mesh(new THREE.SphereGeometry(0.7, 24, 24), amberMat);
-    const earGeo = new THREE.CylinderGeometry(0.1, 0.13, 0.6, 12, 1, false);
-    const l = new THREE.Mesh(earGeo, amberMat); l.position.set(-0.26, 0.85, -0.05); l.rotation.z = 0.18;
-    const r = new THREE.Mesh(earGeo, amberMat); r.position.set(0.26, 0.85, -0.05); r.rotation.z = -0.18;
-    const tail = new THREE.Mesh(new THREE.SphereGeometry(0.17, 12, 12), amberMatDeep);
-    tail.position.set(0, -0.35, -0.65);
-    const eyes = makeBloopFace(1, "happy"); eyes.position.set(0, 0.1, 0.15);
-    formAnimal.add(body, l, r, tail, eyes);
-  }
-
-  /* --- FORM: utensil (spoon) --- */
-  const formUtensil = new THREE.Group();
-  {
-    const handle = new THREE.Mesh(new THREE.CylinderGeometry(0.1, 0.13, 1.3, 16), amberMat);
-    handle.position.y = -0.35;
-    const head = new THREE.Mesh(new THREE.SphereGeometry(0.42, 20, 16), amberMat);
-    head.scale.set(1, 0.55, 0.75);
-    head.position.set(0, 0.6, 0);
-    const eyes = makeBloopFace(0.9, "happy"); eyes.position.set(0, 0.62, 0.3);
-    formUtensil.add(handle, head, eyes);
-  }
-
-  const forms = {
-    blob: formBlob, train: formTrain, laptop: formLaptop,
-    letterbox: formLetterbox, animal: formAnimal, utensil: formUtensil
-  };
-  Object.values(forms).forEach(g => { g.visible = false; bloopRoot.add(g); });
-  let currentForm = 'blob';
-  forms.blob.visible = true;
-
-  function morphTo(name, caption) {
-    if (name === currentForm) { if (caption) say(caption, 3200); return; }
-    const outgoing = forms[currentForm];
-    const incoming = forms[name];
-    const tl = { t: 0 };
-    const dur = 190;
-    const start = performance.now();
-    function squash() {
-      const now = performance.now();
-      const p = Math.min(1, (now - start) / dur);
-      const s = 1 - 0.9 * p;
-      outgoing.scale.set(1 + 0.25 * p, s, 1 + 0.25 * p);
-      if (p < 1) requestAnimationFrame(squash);
-      else {
-        outgoing.visible = false;
-        outgoing.scale.set(1, 1, 1);
-        currentForm = name;
-        incoming.visible = true;
-        incoming.scale.set(1.3, 0.15, 1.3);
-        stretch(performance.now());
+  // Bloop roaming companion: occasional short hops keep the character feeling alive.
+  const bloopRoamHost=document.getElementById('bloop-character');
+  let bloopRoamTimer=null;
+  function scheduleBloopRoam(){
+    if(!bloopRoamHost||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    clearTimeout(bloopRoamTimer);
+    bloopRoamTimer=setTimeout(()=>{
+      if(!bloopRoamHost.classList.contains('bloop-following')){
+        const x=(Math.random()*18-9).toFixed(1);
+        const y=(Math.random()*10-5).toFixed(1);
+        bloopRoamHost.style.setProperty('--bloop-roam-x',x+'%');
+        bloopRoamHost.style.setProperty('--bloop-roam-y',y+'%');
+        bloopRoamHost.classList.add('bloop-roaming');
+        bloop2d.play('curious',{next:'idle'});
+        setTimeout(()=>bloopRoamHost.classList.remove('bloop-roaming'),700);
       }
-    }
-    function stretch(t0) {
-      const now = performance.now();
-      const p = Math.min(1, (now - t0) / (dur + 90));
-      const ease = 1 - Math.pow(1 - p, 3);
-      const overshoot = Math.sin(ease * Math.PI) * 0.12;
-      incoming.scale.set(1.3 - 0.3 * ease, 0.15 + 0.85 * ease + overshoot, 1.3 - 0.3 * ease);
-      if (p < 1) requestAnimationFrame(() => stretch(t0));
-      else incoming.scale.set(1, 1, 1);
-    }
-    squash();
-    document.querySelectorAll('.form-btn').forEach(b => b.classList.toggle('active', b.dataset.form === name));
-    if (caption) say(caption, 3600);
+      scheduleBloopRoam();
+    },4200+Math.random()*4200);
   }
+  scheduleBloopRoam();
 
-  const formLines = {
-    blob: "Just me, Bloop. Amber and ready for anything.",
-    train: "ZOOM ZOOM. Bloop found wheels!",
-    laptop: "Bloop is turbo-typing!",
-    letterbox: "Special delivery! Bloop is the mailbox.",
-    animal: "Ears acquired. Bloop is FAST!",
-    utensil: "Spoon mode! Stir stir!"
-  };
-  window.__bloopMorphTo = true;
-  window.__bloopMorphReq = (name) => morphTo(name, formLines[name]);
-
-  /* ---------------- Idle animation loop ---------------- */
-  let t = 0;
-  function animate() {
-    requestAnimationFrame(animate);
-    t += 0.016;
-
-    if (currentForm === 'blob') {
-      const pos = blobGeo.attributes.position;
-      for (let i = 0; i < pos.count; i++) {
-        const ix = i * 3;
-        const bx = blobBase[ix], by = blobBase[ix + 1], bz = blobBase[ix + 2];
-        const n = wobble(bx, by, bz, t);
-        const len = Math.sqrt(bx * bx + by * by + bz * bz) || 1;
-        const k = 1 + n;
-        pos.array[ix] = bx * k / len * len;
-        pos.array[ix + 1] = by * k;
-        pos.array[ix + 2] = bz * k;
-      }
-      pos.needsUpdate = true;
-      blobGeo.computeVertexNormals();
-    }
-
-    bloopRoot.rotation.y = Math.sin(t * 0.45) * 0.08;
-    if (currentForm === 'blob') {
-      const bounce = Math.abs(Math.sin(t * 4.2)) * 0.055;
-      bloopRoot.position.y = -0.58 + bounce;
-      formBlob.rotation.z = Math.sin(t * 3.0) * 0.018;
-      footL.rotation.z = Math.sin(t * 7.0) * 0.07;
-      footR.rotation.z = -Math.sin(t * 7.0) * 0.07;
-      const squish = 1 + Math.sin(t * 4.2) * 0.025;
-      blobMesh.scale.set(0.82 + (1-squish)*0.35, 0.82*squish, 0.72 + (1-squish)*0.25);
-    } else {
-      bloopRoot.position.y = -0.58;
-    }
-    faceParts.forEach(face => {
-      if (!face.visible) return;
-      const dart = Math.sin(t * 2.1) * 0.035 + Math.sin(t * 0.53) * 0.018;
-      face.userData.leftPupil.position.x = -0.235 + dart;
-      face.userData.rightPupil.position.x = 0.235 + dart;
-      const blink = (Math.sin(t * 0.43) > 0.985) ? 0.12 : 1.0;
-      face.userData.leftWhite.scale.y = 1.12 * blink;
-      face.userData.rightWhite.scale.y = 1.12 * blink;
-    });
-
-    renderer.render(scene, camera);
-  }
-  animate();
-
-  /* ---------------- Object detection (coco-ssd) ---------------- */
-  const scanBtn = document.getElementById('scan-btn');
-  let model = null;
-
-  // COCO-SSD recognizes 80 common classes. Map essentially all useful classes
-  // into a small set of Bloop transformations instead of saying "hasn't learned".
-  const CLASS_TO_FORM = {
-    train:'train', bicycle:'train', motorcycle:'train', car:'train', bus:'train', truck:'train',
-    laptop:'laptop', tv:'laptop', 'cell phone':'laptop', keyboard:'laptop', mouse:'laptop', remote:'laptop',
-    book:'letterbox', suitcase:'letterbox', handbag:'letterbox', backpack:'letterbox', umbrella:'letterbox',
-    tie:'letterbox', clock:'letterbox', vase:'letterbox', scissors:'utensil', hair_drier:'utensil',
-    cat:'animal', dog:'animal', bird:'animal', horse:'animal', sheep:'animal', cow:'animal',
-    elephant:'animal', bear:'animal', zebra:'animal', giraffe:'animal', person:'animal',
-    fork:'utensil', knife:'utensil', spoon:'utensil', bowl:'utensil', cup:'utensil', 'wine glass':'utensil', bottle:'utensil',
-    banana:'utensil', apple:'utensil', sandwich:'utensil', orange:'utensil', broccoli:'utensil', carrot:'utensil',
-    hot_dog:'utensil', pizza:'utensil', donut:'utensil', cake:'utensil',
-    chair:'letterbox', couch:'letterbox', 'dining table':'letterbox', bed:'letterbox', toilet:'letterbox',
-    'potted plant':'letterbox', refrigerator:'letterbox', microwave:'letterbox', oven:'letterbox', sink:'letterbox',
-    'sports ball':'animal', frisbee:'animal', skateboard:'train', surfboard:'train', skis:'train', snowboard:'train',
-    traffic_light:'train', 'fire hydrant':'letterbox', stop_sign:'letterbox', parking_meter:'letterbox',
-    'teddy bear':'animal',
-  };
-  const REACTIONS = {
-    train: n => `👀 <b>${n}</b>! Bloop goes ZOOM ZOOM!`,
-    laptop: n => `Ooh! A <b>${n}</b>. Bloop is TURBO-typing!`,
-    letterbox: n => `A <b>${n}</b>! Bloop is on delivery duty!`,
-    animal: n => `A <b>${n}</b>! Bloop got zoomy ears!`,
-    utensil: n => `A <b>${n}</b>! Bloop is ready to stir!`,
-  };
-  const NEUTRAL = [
-    "Bloop looked around and mostly saw vibes. Try pointing at something specific.",
-    "Nothing screamed 'transform me' just yet — scan again?",
-    "Bloop is thinking very hard about that. Still just a blob though."
-  ];
-
-  async function loadModel() {
-    try {
-      setStatus('scanning', 'loading brain');
-      if (typeof cocoSsd === 'undefined' || typeof tf === 'undefined') {
-        throw new Error('AI library failed to load from CDN');
-      }
-      model = await cocoSsd.load({ base: 'lite_mobilenet_v2' });
-      setStatus(cameraReady ? 'ready' : 'idle', cameraReady ? 'ready' : 'no camera');
-      scanBtn.disabled = false;
-    } catch (e) {
-      console.error('Model load failed:', e);
-      setStatus(cameraReady ? 'ready' : 'idle', cameraReady ? 'ready' : 'no camera');
-      scanBtn.disabled = false;
-      say("Bloop's vision model couldn't load. Check your connection, then reload.", 5000);
-    }
-  }
-  scanBtn.disabled = true;
-  loadModel();
-
-  async function scanRoom() {
-    if (scanBtn.classList.contains('scanning')) return;
-    scanBtn.classList.add('scanning');
-    setStatus('scanning', 'scanning…');
-
-    // A Scan tap is a user gesture, so it is a good place to request the camera
-    // if the user has not enabled it yet.
-    if (!cameraReady) {
-      const ok = await startCamera();
-      if (!ok) {
-        scanBtn.classList.remove('scanning');
-        return;
-      }
-    }
-
-    if (!model) {
-      say("Bloop's brain is still waking up. Give it a moment and scan again.", 2800);
-      scanBtn.classList.remove('scanning');
-      setStatus('scanning', 'loading brain');
-      return;
-    }
-
-    try {
-      if (video.readyState < 2) {
-        say("Camera's still warming up — give it a second and tap Scan again.", 2800);
-      } else {
-        const preds = await model.detect(video);
-        const good = preds.filter(p => p.score > 0.38).sort((a, b) => b.score - a.score);
-        // Prefer a mapped class with strong confidence, even if another tiny object has a slightly higher score.
-        const mapped = good.filter(p => CLASS_TO_FORM[String(p.class).trim().toLowerCase()]);
-        if (!good.length) {
-          say(NEUTRAL[Math.floor(Math.random() * NEUTRAL.length)], 3200);
-        } else {
-          const top = mapped[0] || good[0];
-          const key = String(top.class).trim().toLowerCase();
-          const formName = CLASS_TO_FORM[key] || null;
-          if (formName) {
-            rememberDiscovery(formName, top.class);
-            morphTo(formName, REACTIONS[formName](top.class));
-          } else {
-            say(`Bloop spotted a <b>${top.class}</b> — hasn't learned that shape yet.`, 3200);
-          }
+  // Tiny autonomous personality moments keep Bloop alive between scans.
+  let bloopLifeTimer=null;
+  function scheduleBloopLife(){
+    if(!bloopRoamHost||window.matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+    clearTimeout(bloopLifeTimer);
+    bloopLifeTimer=setTimeout(()=>{
+      if(!bloopRoamHost.classList.contains('bloop-following')&&!bloopRoamHost.classList.contains('bloop-object-attached')&&!bloopHost.classList.contains('bloop-chasing')){
+        const roll=Math.random();
+        if(roll<.32){
+          bloop2d.play('blink',{next:'idle',force:true});
+        }else{
+          const cls=roll<.58?'bloop-fidget':roll<.8?'bloop-curious-look':'bloop-celebration-pop';
+          bloopRoamHost.classList.add(cls);
+          bloop2d.play(roll<.58?'idle':roll<.8?'curious':'excited',{next:'idle',force:true});
+          setTimeout(()=>bloopRoamHost.classList.remove(cls),760);
         }
+        setTimeout(()=>bloopRoamHost.classList.remove(cls),760);
       }
-    } catch (e) {
-      console.error('Scan failed:', e);
-      say("Bloop blinked and missed that one (" + (e.message || 'unknown error') + "). Try again?", 3200);
-    }
-
-    scanBtn.classList.remove('scanning');
-    setStatus('ready', 'ready');
+      scheduleBloopLife();
+    },5200+Math.random()*6200);
   }
-  window.__bloopScan = scanRoom;
+  scheduleBloopLife();
 
-  // Small celebratory particles for successful discoveries.
-  function popSparkles() {
-    const count = 12;
-    const group = new THREE.Group();
-    const mat = new THREE.MeshBasicMaterial({ color: 0xffc15c });
-    for (let i = 0; i < count; i++) {
-      const s = new THREE.Mesh(new THREE.SphereGeometry(0.025, 8, 8), mat);
-      const a = (i / count) * Math.PI * 2;
-      s.position.set(Math.cos(a) * 0.75, Math.sin(a) * 0.55 + 0.1, 0.55);
-      group.add(s);
-    }
-    bloopRoot.add(group);
-    const started = performance.now();
-    function tickSpark() {
-      const p = Math.min(1, (performance.now() - started) / 650);
-      group.children.forEach((s, i) => {
-        const a = (i / count) * Math.PI * 2;
-        s.position.x += Math.cos(a) * 0.006;
-        s.position.y += 0.010;
-        s.scale.setScalar(1 - p);
-      });
-      if (p < 1) requestAnimationFrame(tickSpark);
-      else bloopRoot.remove(group);
-    }
-    tickSpark();
-  }
-
-  const originalMorphTo = morphTo;
-  morphTo = function(name, caption) {
-    originalMorphTo(name, caption);
-    if (name !== 'blob') setTimeout(popSparkles, 300);
-  };
-
-  } catch (sceneErr) {
-    logError('3D scene setup', sceneErr);
-    setStatus('idle', 'display error');
-    say("Bloop's visuals hit a snag loading on this device/browser — the error above should say why.", 0);
-  }
-
+  window.addEventListener("bloop-reaction-complete",(e)=>{const d=e.detail||{};showDiscoveryToast(d.object||"New discovery",d.reaction||"Bloop had fun!");if(d.object){const safeName=String(d.object).replace(/<[^>]*>/g,"");try{rememberDiscovery(d.reaction||"curious",safeName);renderDex();}catch(_){}}});\n\n  window.__bloopScan=scanRoom;
 })();
 </script>
 </body>

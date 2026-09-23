@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Bloop blink">
+<image href="./bloop.svg" x="0" y="0" width="256" height="256"/>
+<g fill="none" stroke="#E87518" stroke-width="10" stroke-linecap="round">
+<path d="M76 110 Q96 125 116 110"/>
+<path d="M140 110 Q160 125 180 110"/>
+</g>
+</svg>
