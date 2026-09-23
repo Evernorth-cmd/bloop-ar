@@ -335,7 +335,7 @@
 </div>
 
 
-<div id="bloopdex" aria-hidden="true">
+<div id="bloop-toast" aria-live="polite"></div>\n  <div id="bloopdex" aria-hidden="true">
   <div class="dex-card">
     <div class="dex-head"><strong>BLOOPDEX</strong><button id="dex-close" aria-label="Close">×</button></div>
     <div class="dex-sub">Things Bloop has discovered and how Bloop reacted.</div>
@@ -474,6 +474,15 @@
   let discoveries = {};
   try { discoveries = JSON.parse(localStorage.getItem(BLOOPDEX_KEY) || '{}'); } catch (_) {}
 
+  function showDiscoveryToast(objectName,reaction){
+    const toast=document.getElementById("bloop-toast");
+    if(!toast)return;
+    toast.innerHTML="✨ <b>"+objectName+"</b><span>"+reaction+"</span>";
+    toast.classList.add("show");
+    clearTimeout(window.__bloopToastTimer);
+    window.__bloopToastTimer=setTimeout(()=>toast.classList.remove("show"),1900);
+  }
+
   function rememberDiscovery(formName, objectName) {
     discoveries[objectName] = { form: formName, firstSeen: Date.now() };
     try { localStorage.setItem(BLOOPDEX_KEY, JSON.stringify(discoveries)); } catch (_) {}
@@ -572,7 +581,7 @@
   }
   scheduleBloopLife();
 
-  window.__bloopScan=scanRoom;
+  window.addEventListener("bloop-reaction-complete",(e)=>{const d=e.detail||{};showDiscoveryToast(d.object||"New discovery",d.reaction||"Bloop had fun!");});\n\n  window.__bloopScan=scanRoom;
 })();
 </script>
 </body>
