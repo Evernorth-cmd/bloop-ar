@@ -1,0 +1,45 @@
+/* True-feeling silhouette morph layer.
+   The target artwork remains recognizable while Bloop's orange body compresses,
+   stretches and resolves into the detected-object personality. */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind] .bloop-morph-target{
+  will-change:transform,opacity,filter;
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"].bloop-morphing .bloop-morph-target{
+  animation:bloop-cup-resolve .38s cubic-bezier(.16,.84,.22,1) 1 forwards!important;
+}
+@keyframes bloop-cup-resolve{
+  0%{opacity:0;transform:translateY(18px) scale(.52,.34) rotate(-2deg);filter:blur(3px) saturate(.8)}
+  38%{opacity:.28;transform:translateY(8px) scale(.82,.55) rotate(2deg);filter:blur(1.5px) saturate(.9)}
+  72%{opacity:.82;transform:translateY(-2px) scale(1.05,.94) rotate(-1deg);filter:blur(.4px) saturate(1)}
+  100%{opacity:1;transform:translateY(0) scale(1) rotate(0);filter:none}
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"].bloop-morphing .bloop-morph-target{
+  animation:bloop-bottle-resolve .36s cubic-bezier(.12,.86,.2,1) 1 forwards!important;
+}
+@keyframes bloop-bottle-resolve{
+  0%{opacity:0;transform:translateX(-16px) scale(.3,.72) skewX(-10deg);filter:blur(3px)}
+  40%{opacity:.3;transform:translateX(8px) scale(.52,1.18) skewX(8deg);filter:blur(1.4px)}
+  75%{opacity:.84;transform:translateX(-2px) scale(1.03,.98) skewX(-2deg);filter:blur(.3px)}
+  100%{opacity:1;transform:none;filter:none}
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="tv"].bloop-morphing .bloop-morph-target{
+  animation:bloop-tv-resolve .38s cubic-bezier(.18,.82,.2,1) 1 forwards!important;
+}
+@keyframes bloop-tv-resolve{
+  0%{opacity:0;transform:scale(.45,.72) rotate(-6deg);filter:blur(3px)}
+  42%{opacity:.35;transform:scale(.72,1.12) rotate(4deg);filter:blur(1.2px)}
+  78%{opacity:.9;transform:scale(1.04,.96) rotate(-1deg);filter:blur(.2px)}
+  100%{opacity:1;transform:none;filter:none}
+}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="teddy"].bloop-morphing .bloop-morph-target{
+  animation:bloop-teddy-resolve .38s cubic-bezier(.16,.88,.2,1) 1 forwards!important;
+}
+@keyframes bloop-teddy-resolve{
+  0%{opacity:0;transform:scale(.55,.62);filter:blur(3px)}
+  38%{opacity:.3;transform:translateY(-6px) scale(1.16,.78);filter:blur(1.2px)}
+  72%{opacity:.86;transform:translateY(2px) scale(.96,1.08);filter:blur(.2px)}
+  100%{opacity:1;transform:none;filter:none}
+}
+@media(prefers-reduced-motion:reduce){
+ .bloop-2d-host.bloop-object-attached[data-bloop-object-kind] .bloop-morph-target{animation:none!important;opacity:1;filter:none}
+}
