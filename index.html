@@ -438,6 +438,7 @@
       video.classList.add('live');
       overlay.classList.add('hidden');
       document.documentElement.dataset.bloopCameraReady = '1';
+      window.dispatchEvent(new Event('bloop-camera-ready'));
       btn.dataset.cameraBusy = '0';
       return false;
     } catch (err) {
@@ -501,7 +502,11 @@
   const permOverlay = document.getElementById('perm-overlay');
   const permBtn = document.getElementById('perm-btn');
   const permError = document.getElementById('perm-error');
-  let cameraReady = false;
+  let cameraReady = !!video.srcObject && video.readyState >= 2;
+  window.addEventListener('bloop-camera-ready', () => {
+    cameraReady = true;
+    setStatus('ready', 'ready');
+  });
 
   function explainError(err) {
     if (!window.isSecureContext) {
@@ -745,7 +750,9 @@
   }
   scheduleBloopLife();
 
-  window.addEventListener("bloop-reaction-complete",(e)=>{const d=e.detail||{};showDiscoveryToast(d.object||"New discovery",d.reaction||"Bloop had fun!");if(d.object){const safeName=String(d.object).replace(/<[^>]*>/g,"");try{rememberDiscovery(d.reaction||"curious",safeName);renderDex();}catch(_){}}});\n\n  window.__bloopScan=scanRoom;
+  window.addEventListener("bloop-reaction-complete",(e)=>{const d=e.detail||{};showDiscoveryToast(d.object||"New discovery",d.reaction||"Bloop had fun!");if(d.object){const safeName=String(d.object).replace(/<[^>]*>/g,"");try{rememberDiscovery(d.reaction||"curious",safeName);renderDex();}catch(_){}}});
+
+  window.__bloopScan=scanRoom;
 })();
 </script>
 </body>
