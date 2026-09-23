@@ -274,3 +274,15 @@
 @media(prefers-reduced-motion:reduce){
   .bloop-2d-host.bloop-attention .bloop-2d-sprite{animation:none!important}
 }
+/* Bloop lets go with a tiny springy hop after an interaction. */
+.bloop-2d-host.bloop-release .bloop-2d-sprite{
+  animation:bloop-release .52s cubic-bezier(.14,.92,.2,1) 1!important;
+}
+@keyframes bloop-release{
+  0%{transform:translateY(0) scale(1)}
+  28%{transform:translateY(-12px) scale(1.08,.94)}
+  58%{transform:translateY(1px) scale(.94,1.06)}
+  78%{transform:translateY(-4px) scale(1.03,.98)}
+  100%{transform:none}
+}
+@media(prefers-reduced-motion:reduce){.bloop-2d-host.bloop-release .bloop-2d-sprite{animation:none!important}}
