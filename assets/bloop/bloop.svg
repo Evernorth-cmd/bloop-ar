@@ -15,7 +15,7 @@
 <path class="body" d="M128 39 C91 39 65 65 61 107 C57 149 72 191 101 202 C117 208 139 208 155 202 C184 191 199 149 195 107 C191 65 165 39 128 39Z" fill="url(#body)" stroke="#C95712" stroke-width="5"/>
 <path d="M88 72 C96 53 116 48 132 50 C115 57 106 67 101 84Z" fill="url(#shine)" opacity=".65"/>
 <ellipse cx="94" cy="140" rx="17" ry="9" fill="url(#cheek)" opacity=".78"/><ellipse cx="162" cy="140" rx="17" ry="9" fill="url(#cheek)" opacity=".78"/>
-<g class="eyes">
+<style>@keyframes eyeWander{0%,100%{transform:translate(0,0)}25%{transform:translate(3px,-2px)}50%{transform:translate(-3px,1px)}75%{transform:translate(2px,2px)}}.pupil{animation:eyeWander 3.6s ease-in-out infinite;transform-origin:center}.left-eye .pupil{transform-box:fill-box}.right-eye .pupil{transform-box:fill-box}</style><g class="eyes">
 <g class="eye left-eye"><ellipse cx="96" cy="107" rx="24" ry="31" fill="#FFFDF5" stroke="#5A301D" stroke-width="4"/><ellipse class="pupil" cx="101" cy="112" rx="12" ry="17" fill="#2B201B"/><circle cx="105" cy="105" r="5" fill="#fff"/></g>
 <g class="eye right-eye"><ellipse cx="160" cy="107" rx="24" ry="31" fill="#FFFDF5" stroke="#5A301D" stroke-width="4"/><ellipse class="pupil" cx="155" cy="112" rx="12" ry="17" fill="#2B201B"/><circle cx="159" cy="105" r="5" fill="#fff"/></g></g>
 <g class="brows" fill="none" stroke="#5A301D" stroke-width="6" stroke-linecap="round"><path d="M78 76 Q95 64 111 75"/><path d="M145 75 Q161 64 178 76"/></g>
