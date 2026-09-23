@@ -506,6 +506,23 @@
   async function loadModel(){try{setStatus('scanning','loading brain');if(typeof cocoSsd==='undefined'||typeof tf==='undefined')throw new Error('AI library failed to load from CDN');model=await cocoSsd.load({base:'lite_mobilenet_v2'});setStatus(cameraReady?'ready':'idle',cameraReady?'ready':'no camera');scanBtn.disabled=false}catch(e){console.error('Model load failed:',e);setStatus(cameraReady?'ready':'idle',cameraReady?'ready':'no camera');scanBtn.disabled=false;say("Bloop's vision model couldn't load. Check your connection, then reload.",5000)}}
   scanBtn.disabled=true;loadModel();
   async function scanRoom(){if(scanBtn.classList.contains('scanning'))return;scanBtn.classList.add('scanning');setStatus('scanning','scanning…');bloop2d.play('thinking');if(!cameraReady){const ok=await startCamera();if(!ok){scanBtn.classList.remove('scanning');bloop2d.play('idle');return}}if(!model){say("Bloop's brain is still waking up. Give it a moment and scan again.",2800);scanBtn.classList.remove('scanning');setStatus('scanning','loading brain');return}try{if(video.readyState<2){say("Camera's still warming up — give it a second and tap Scan again.",2800)}else{const preds=await model.detect(video),good=preds.filter(p=>p.score>0.38).sort((a,b)=>b.score-a.score),mapped=good.filter(p=>CLASS_TO_FORM[String(p.class).trim().toLowerCase()]);if(!good.length){say(NEUTRAL[Math.floor(Math.random()*NEUTRAL.length)],3200);bloop2d.play('curious',{next:'idle'})}else{const top=mapped[0]||good[0],key=String(top.class).trim().toLowerCase(),formName=CLASS_TO_FORM[key]||null;if(formName){rememberDiscovery(formName,top.class);morphTo(formName,REACTIONS[formName](top.class))}else{say("Bloop spotted a <b>"+top.class+"</b> — hasn't learned that shape yet.",3200);bloop2d.play('surprised',{next:'idle'})}}}}catch(e){console.error('Scan failed:',e);say("Bloop blinked and missed that one ("+(e.message||'unknown error')+"). Try again?",3200);bloop2d.play('surprised',{next:'idle'})}scanBtn.classList.remove('scanning');setStatus('ready','ready')}
+  // Bloop companion interaction: follows the user's pointer/touch without blocking the AR camera.
+  const bloopHost=document.getElementById('bloop-character');
+  let bloopFollowTimer=null;
+  function moveBloopToward(clientX,clientY){
+    if(!bloopHost)return;
+    const rect=bloopHost.parentElement.getBoundingClientRect();
+    const x=Math.max(14,Math.min(rect.width-14,clientX-rect.left));
+    const y=Math.max(14,Math.min(rect.height-14,clientY-rect.top));
+    bloopHost.style.setProperty('--bloop-pointer-x',((x/rect.width)*100).toFixed(1)+'%');
+    bloopHost.style.setProperty('--bloop-pointer-y',((y/rect.height)*100).toFixed(1)+'%');
+    bloopHost.classList.add('bloop-following');
+    clearTimeout(bloopFollowTimer);
+    bloopFollowTimer=setTimeout(()=>bloopHost.classList.remove('bloop-following'),900);
+  }
+  window.addEventListener('pointermove',e=>moveBloopToward(e.clientX,e.clientY),{passive:true});
+  window.addEventListener('pointerdown',e=>{moveBloopToward(e.clientX,e.clientY);bloop2d.play('excited',{next:'idle'})},{passive:true});
+
   window.__bloopScan=scanRoom;
 })();
 </script>
