@@ -77,3 +77,13 @@
 .bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"]{z-index:9;width:min(var(--bloop-transform-w,110px),28vw);height:min(var(--bloop-transform-h,110px),28vw)}
 .bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"] .bloop-2d-sprite{transform-origin:50% 92%}
 .bloop-2d-host.bloop-object-attached[data-bloop-object-kind="teddy"] .bloop-2d-sprite{transform-origin:50% 86%}
+
+/* Physical transformation choreography: approach, contact, then settle into the object. */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="cup"] .bloop-2d-sprite{animation:bloop-cup-enter 1.05s cubic-bezier(.18,.82,.22,1) 1 forwards}
+@keyframes bloop-cup-enter{0%{transform:translateY(-24px) scale(.9,1.05);opacity:.98}22%{transform:translateY(-8px) scale(1.02,.94)}48%{transform:translateY(4px) scale(1.12,.78)}72%{transform:translateY(14px) scale(.82,1.02)}100%{transform:translateY(7px) scale(.88,.94)}}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="bottle"] .bloop-2d-sprite{animation:bloop-bottle-wrap 1.05s cubic-bezier(.18,.82,.22,1) 1 forwards}
+@keyframes bloop-bottle-wrap{0%{transform:translateX(-18px) rotate(-12deg) scale(.65,1.1)}25%{transform:translateX(-8px) rotate(-20deg) scale(.52,1.3)}50%{transform:translateX(9px) rotate(18deg) scale(.48,1.38)}75%{transform:translateX(5px) rotate(8deg) scale(.58,1.22)}100%{transform:translateX(0) rotate(0) scale(.7,1.1)}}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="tv"] .bloop-2d-sprite{animation:bloop-tv-settle .9s cubic-bezier(.2,.8,.2,1) 1 forwards}
+@keyframes bloop-tv-settle{0%{transform:translateY(12px) scale(.72,1.15) rotate(-5deg)}40%{transform:translateY(-5px) scale(.9,1.04) rotate(4deg)}70%{transform:translateY(3px) scale(.82,1.08) rotate(-2deg)}100%{transform:translateY(0) scale(.86,1.04) rotate(0)}}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="teddy"] .bloop-2d-sprite{animation:bloop-teddy-settle .9s cubic-bezier(.2,.8,.2,1) 1 forwards}
+@keyframes bloop-teddy-settle{0%{transform:translateY(10px) scale(.86,.94)}45%{transform:translateY(-4px) scale(1.06,1.08)}70%{transform:translateY(2px) scale(.98,1.02)}100%{transform:translateY(0) scale(1)}}
