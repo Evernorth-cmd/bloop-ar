@@ -5,3 +5,7 @@
 .bloop-2d-host.bloop-following .bloop-2d-sprite{animation:bloop-follow .42s ease-out 1}
 @keyframes bloop-follow{0%{transform:translateY(0) rotate(0) scale(1)}45%{transform:translateY(-5px) rotate(-2deg) scale(1.035)}100%{transform:translateY(0) rotate(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){.bloop-2d-host{transition:none}.bloop-2d-host.bloop-following{transform:translateX(-50%)}}
+
+.bloop-2d-host.bloop-roaming{animation:bloop-roam .7s cubic-bezier(.2,.9,.2,1) 1}
+@keyframes bloop-roam{0%{transform:translateX(-50%) translate(0,0) scale(1)}35%{transform:translateX(-50%) translate(var(--bloop-roam-x),var(--bloop-roam-y)) scale(1.035)}70%{transform:translateX(-50%) translate(calc(var(--bloop-roam-x) * .85),calc(var(--bloop-roam-y) * .85)) scale(1)}100%{transform:translateX(-50%) translate(0,0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.bloop-2d-host.bloop-roaming{animation:none}}
