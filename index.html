@@ -490,10 +490,20 @@
 
   const dex = document.getElementById('bloopdex');
   const dexList = document.getElementById('dex-list');
+  const DISCOVERY_INFO={
+  cup:["🥤","slime inside it","Bloop melts into cups like a tiny slime creature."],
+  bottle:["🍾","snake wrap","Bloop stretches and curls around bottles."],
+  tv:["📺","remote mode","Bloop turns into a playful remote."],
+  teddy:["🧸","teddy mode","Bloop cuddles into a soft teddy-like form."],
+  mouse:["🖱️","chase mode","Bloop gets excited and chases the mouse."],
+  laptop:["💻","typing mode","Bloop hops onto the laptop and gets busy."],
+  train:["🚗","zoom mode","Bloop goes super fast with moving vehicles."],
+  blob:["✨","curious","Bloop doesn't know this one yet — but it's interested."]
+};
   function renderDex() {
     const entries = Object.entries(discoveries);
     dexList.innerHTML = entries.length
-      ? entries.map(([name, d]) => `<div class="dex-item"><b>${name}</b><span>${d.form === 'bloop' ? 'curious Bloop' : d.form + ' Bloop'}</span></div>`).join('')
+      ? entries.map(([name,d])=>{const info=DISCOVERY_INFO[d.form]||DISCOVERY_INFO.blob;return `<div class="dex-item"><b>${info[0]} ${name}</b><span><strong>${info[1]}</strong> · ${info[2]}</span></div>`}).join('')
       : `<div class="dex-item" style="grid-column:1/-1"><b>No discoveries yet</b><span>Point Bloop at something and tap Scan.</span></div>`;
   }
   document.getElementById('dex-btn').addEventListener('click', () => {
