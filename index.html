@@ -227,7 +227,7 @@
   #perm-emoji { font-size: 44px; }
   #perm-title { font-family: 'Fredoka', sans-serif; font-size: 20px; font-weight: 600; color: var(--amber-light); }
   #perm-body { font-size: 14px; color: var(--muted); line-height: 1.5; }
-  #perm-btn {
+  #perm-btn { position:relative; z-index:100; pointer-events:auto; touch-action:manipulation; -webkit-user-select:none; user-select:none;
     margin-top: 4px;
     padding: 11px 22px;
     border-radius: 100px;
@@ -370,7 +370,7 @@
     <div id="perm-emoji">🟠</div>
     <div id="perm-title">Let Bloop see</div>
     <div id="perm-body">Bloop uses your camera to look around and react to your world. Nothing is recorded or sent anywhere — it all happens on this page.</div>
-    <button id="perm-btn">Turn on camera</button>
+    <button id="perm-btn" type="button">Turn on camera</button>
     <div id="perm-error" style="display:none; font-size:12.5px; color:#ffb08a; background:rgba(255,80,40,0.1); border:1px solid rgba(255,80,40,0.25); border-radius:10px; padding:9px 12px; text-align:left;"></div>
     <div id="perm-note">You can still play with Bloop without the camera.</div>
   </div>
@@ -469,6 +469,7 @@
     }
   }
   permBtn.addEventListener('click', startCamera);
+  permBtn.addEventListener('pointerup', (e) => { if (e.pointerType !== 'mouse') { e.preventDefault(); startCamera(); } }, { passive: false });
   // Do NOT auto-request on load — on iOS Safari and most in-app browsers, getUserMedia
   // silently fails without a direct user tap. Wait for the button press instead.
 
