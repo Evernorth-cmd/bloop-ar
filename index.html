@@ -581,7 +581,7 @@
   }
   scheduleBloopLife();
 
-  window.addEventListener("bloop-reaction-complete",(e)=>{const d=e.detail||{};showDiscoveryToast(d.object||"New discovery",d.reaction||"Bloop had fun!");});\n\n  window.__bloopScan=scanRoom;
+  window.addEventListener("bloop-reaction-complete",(e)=>{const d=e.detail||{};showDiscoveryToast(d.object||"New discovery",d.reaction||"Bloop had fun!");if(d.object){const safeName=String(d.object).replace(/<[^>]*>/g,"");try{rememberDiscovery(d.reaction||"curious",safeName);renderDex();}catch(_){}}});\n\n  window.__bloopScan=scanRoom;
 })();
 </script>
 </body>
