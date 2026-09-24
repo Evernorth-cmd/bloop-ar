@@ -486,6 +486,11 @@
   .bloop-2d-host.bloop-vehicle-release::after{animation:none!important}
 }
 
+/* Mobile companion scale: keep Bloop cute and screen-friendly instead of covering the camera. */
+.bloop-2d-host{width:clamp(92px,22vw,128px);height:clamp(92px,22vw,128px)}
+.bloop-2d-host.bloop-object-attached{width:min(var(--bloop-transform-w,var(--bloop-object-w,112px)),30vw);height:min(var(--bloop-transform-h,var(--bloop-object-h,112px)),30vw)}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="laptop"],
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="mouse"]{width:min(108px,26vw);height:min(108px,26vw)}
 /* FINAL Bloop foreground layer: must stay above captions, controls, and scrims. */
 #bloop-character{position:fixed!important;z-index:1000!important;pointer-events:none!important;}
 #bloop-character.bloop-object-attached{position:fixed!important;z-index:1001!important;pointer-events:none!important;}
