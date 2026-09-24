@@ -485,3 +485,7 @@
   .bloop-2d-host.bloop-vehicle-release .bloop-2d-sprite,
   .bloop-2d-host.bloop-vehicle-release::after{animation:none!important}
 }
+
+/* FINAL Bloop foreground layer: must stay above captions, controls, and scrims. */
+#bloop-character{position:fixed!important;z-index:1000!important;pointer-events:none!important;}
+#bloop-character.bloop-object-attached{position:fixed!important;z-index:1001!important;pointer-events:none!important;}
