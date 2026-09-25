@@ -494,3 +494,9 @@
 /* FINAL Bloop foreground layer: must stay above captions, controls, and scrims. */
 #bloop-character{position:fixed!important;z-index:1000!important;pointer-events:none!important;}
 #bloop-character.bloop-object-attached{position:fixed!important;z-index:1001!important;pointer-events:none!important;}
+
+/* Learned-memory presentation: keep Bloop in clear view instead of behind the control bar. */
+#bloop-character.bloop-memory-found{animation:bloop-memory-pop .65s cubic-bezier(.16,.9,.24,1) both!important;z-index:2147483648!important}
+@keyframes bloop-memory-pop{0%{transform:translate(-50%,-50%) scale(.65) rotate(-8deg);opacity:.35}55%{transform:translate(-50%,-50%) scale(1.08) rotate(3deg);opacity:1}100%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1}}
+/* Keep the new character visually consistent across every state. */
+.bloop-2d-host .bloop-2d-sprite{filter:drop-shadow(0 7px 8px rgba(80,25,0,.18))}
