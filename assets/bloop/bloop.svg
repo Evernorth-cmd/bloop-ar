@@ -1,26 +1,43 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="Bloop">
 <defs>
-<radialGradient id="body" cx="35%" cy="22%" r="82%"><stop offset="0" stop-color="#FFD86A"/><stop offset=".42" stop-color="#FFAA32"/><stop offset="1" stop-color="#E96B16"/></radialGradient>
-<radialGradient id="cheek"><stop stop-color="#FF9B87"/><stop offset="1" stop-color="#F56B69"/></radialGradient>
-<linearGradient id="shine" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#FFF4B8"/><stop offset="1" stop-color="#FFB83D"/></linearGradient>
-<filter id="shadow"><feDropShadow dx="0" dy="7" stdDeviation="5" flood-opacity=".22"/></filter>
+  <radialGradient id="body" cx="34%" cy="20%" r="78%"><stop offset="0" stop-color="#FFD84A"/><stop offset=".48" stop-color="#FF9F18"/><stop offset="1" stop-color="#F46A0A"/></radialGradient>
+  <radialGradient id="limb" cx="35%" cy="25%" r="80%"><stop offset="0" stop-color="#FFD84A"/><stop offset=".7" stop-color="#FF9A12"/><stop offset="1" stop-color="#F06A0B"/></radialGradient>
+  <linearGradient id="iris" x2="0" y2="1"><stop stop-color="#75B9FF"/><stop offset=".55" stop-color="#3159C7"/><stop offset="1" stop-color="#17245F"/></linearGradient>
+  <filter id="shadow"><feDropShadow dx="0" dy="5" stdDeviation="4" flood-color="#5C2400" flood-opacity=".3"/></filter>
 </defs>
-<g class="bloop-art" filter="url(#shadow)">
-<ellipse class="ground" cx="128" cy="220" rx="61" ry="11" fill="#8A4C20" opacity=".18"/>
-<g class="speed-lines" fill="none" stroke-linecap="round"><path d="M42 118h42" stroke="#62D7FF" stroke-width="6"/><path d="M33 134h48" stroke="#35BFFF" stroke-width="5"/><path d="M48 150h35" stroke="#8DE8FF" stroke-width="4"/></g>
-<path class="arm left" d="M73 154 C58 163 52 180 62 190 C69 197 81 192 88 181" fill="none" stroke="#E87518" stroke-width="15" stroke-linecap="round"/>
-<path class="arm right" d="M183 154 C198 163 204 180 194 190 C187 197 175 192 168 181" fill="none" stroke="#E87518" stroke-width="15" stroke-linecap="round"/>
-<path class="foot left" d="M73 184 C54 184 48 201 59 209 C68 216 82 208 87 196" fill="none" stroke="#D95F14" stroke-width="18" stroke-linecap="round"/>
-<path class="foot right" d="M183 184 C202 184 208 201 197 209 C188 216 174 208 169 196" fill="none" stroke="#D95F14" stroke-width="18" stroke-linecap="round"/>
-<path class="body" d="M128 39 C91 39 65 65 61 107 C57 149 72 191 101 202 C117 208 139 208 155 202 C184 191 199 149 195 107 C191 65 165 39 128 39Z" fill="url(#body)" stroke="#C95712" stroke-width="5"/>
-<path d="M88 72 C96 53 116 48 132 50 C115 57 106 67 101 84Z" fill="url(#shine)" opacity=".65"/>
-<ellipse cx="94" cy="140" rx="17" ry="9" fill="url(#cheek)" opacity=".78"/><ellipse cx="162" cy="140" rx="17" ry="9" fill="url(#cheek)" opacity=".78"/>
-<style>@keyframes eyeWander{0%,100%{transform:translate(0,0)}25%{transform:translate(3px,-2px)}50%{transform:translate(-3px,1px)}75%{transform:translate(2px,2px)}}.pupil{animation:eyeWander 3.6s ease-in-out infinite;transform-origin:center}.left-eye .pupil{transform-box:fill-box}.right-eye .pupil{transform-box:fill-box}</style><g class="eyes">
-<g class="eye left-eye"><ellipse cx="96" cy="107" rx="24" ry="31" fill="#FFFDF5" stroke="#5A301D" stroke-width="4"/><ellipse class="pupil" cx="101" cy="112" rx="12" ry="17" fill="#2B201B"/><circle cx="105" cy="105" r="5" fill="#fff"/></g>
-<g class="eye right-eye"><ellipse cx="160" cy="107" rx="24" ry="31" fill="#FFFDF5" stroke="#5A301D" stroke-width="4"/><ellipse class="pupil" cx="155" cy="112" rx="12" ry="17" fill="#2B201B"/><circle cx="159" cy="105" r="5" fill="#fff"/></g></g>
-<g class="brows" fill="none" stroke="#5A301D" stroke-width="6" stroke-linecap="round"><path d="M78 76 Q95 64 111 75"/><path d="M145 75 Q161 64 178 76"/></g>
-<path class="mouth" d="M108 151 Q128 166 148 151 Q146 179 128 181 Q110 179 108 151Z" fill="#3A1714" stroke="#5A301D" stroke-width="4"/>
-<path d="M116 169 Q128 162 140 169 Q138 178 128 180 Q118 178 116 169Z" fill="#FF7279"/><path d="M116 151 Q128 158 140 151" fill="none" stroke="#FFF7E8" stroke-width="5" stroke-linecap="round"/>
-<g class="sparkles" fill="#FFD84D"><circle cx="53" cy="68" r="4"/><circle cx="203" cy="73" r="4"/><path d="M47 88l4 9 9 4-9 4-4 9-4-9-9-4 9-4z"/><path d="M210 103l3 7 7 3-7 3-3 7-3-7-7-3 7-3z"/></g>
+<g filter="url(#shadow)" stroke="#9E3B08" stroke-width="4" stroke-linejoin="round">
+  <ellipse cx="44" cy="150" rx="25" ry="20" fill="url(#limb)"/>
+  <ellipse cx="212" cy="150" rx="25" ry="20" fill="url(#limb)"/>
+  <ellipse cx="72" cy="205" rx="28" ry="20" fill="url(#limb)"/>
+  <ellipse cx="112" cy="214" rx="29" ry="21" fill="url(#limb)"/>
+  <ellipse cx="168" cy="211" rx="29" ry="21" fill="url(#limb)"/>
+  <ellipse cx="128" cy="128" rx="91" ry="91" fill="url(#body)"/>
 </g>
+<!-- highlights -->
+<ellipse cx="88" cy="66" rx="27" ry="12" fill="#FFE98A" opacity=".62" transform="rotate(-22 88 66)"/>
+<ellipse cx="166" cy="54" rx="17" ry="8" fill="#FFF3A8" opacity=".7" transform="rotate(22 166 54)"/>
+<!-- eyes -->
+<g stroke="#40200F" stroke-width="4">
+  <ellipse cx="91" cy="119" rx="31" ry="42" fill="#FFFDF4"/>
+  <ellipse cx="166" cy="119" rx="31" ry="42" fill="#FFFDF4"/>
+</g>
+<ellipse cx="94" cy="121" rx="19" ry="29" fill="url(#iris)"/>
+<ellipse cx="169" cy="121" rx="19" ry="29" fill="url(#iris)"/>
+<ellipse cx="97" cy="124" rx="10" ry="17" fill="#17151D"/>
+<ellipse cx="172" cy="124" rx="10" ry="17" fill="#17151D"/>
+<circle cx="101" cy="113" r="5" fill="#fff"/>
+<circle cx="176" cy="113" r="5" fill="#fff"/>
+<!-- brows -->
+<path d="M64 75 Q86 58 106 70" fill="none" stroke="#3A1A0C" stroke-width="7" stroke-linecap="round"/>
+<path d="M151 69 Q174 56 193 72" fill="none" stroke="#3A1A0C" stroke-width="7" stroke-linecap="round"/>
+<!-- cheeks -->
+<ellipse cx="69" cy="157" rx="17" ry="9" fill="#FF6F76" opacity=".72"/>
+<ellipse cx="188" cy="157" rx="17" ry="9" fill="#FF6F76" opacity=".72"/>
+<!-- happy mouth -->
+<path d="M116 151 Q128 160 141 151 Q141 177 128 180 Q115 177 116 151Z" fill="#45130F" stroke="#45130F" stroke-width="3"/>
+<path d="M121 169 Q128 164 136 169 Q134 178 128 178 Q122 177 121 169Z" fill="#FF7181" stroke="none"/>
+<!-- foot shine -->
+<ellipse cx="71" cy="205" rx="13" ry="5" fill="#73E6FF" opacity=".9" stroke="none"/>
+<ellipse cx="112" cy="214" rx="14" ry="5" fill="#73E6FF" opacity=".9" stroke="none"/>
+<ellipse cx="168" cy="211" rx="14" ry="5" fill="#73E6FF" opacity=".9" stroke="none"/>
 </svg>
