@@ -500,3 +500,10 @@
 @keyframes bloop-memory-pop{0%{transform:translate(-50%,-50%) scale(.65) rotate(-8deg);opacity:.35}55%{transform:translate(-50%,-50%) scale(1.08) rotate(3deg);opacity:1}100%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1}}
 /* Keep the new character visually consistent across every state. */
 .bloop-2d-host .bloop-2d-sprite{filter:drop-shadow(0 7px 8px rgba(80,25,0,.18))}
+
+/* Remote mode: Bloop keeps its face but becomes a playful handheld remote. */
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="remote"]{width:min(92px,22vw)!important;height:min(160px,38vw)!important;z-index:10!important;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="remote"]::before{content:"";position:absolute;inset:0;border-radius:22px;background:linear-gradient(145deg,#ffb52f,#ff7a12);border:4px solid #7d3d0c;box-shadow:0 10px 18px rgba(70,30,0,.25),inset 0 3px 0 rgba(255,255,255,.28);z-index:-1;transform:scale(.92);}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="remote"] .bloop-2d-sprite{width:68%;height:48%;object-fit:contain;animation:bloop-remote-form .8s cubic-bezier(.2,.9,.2,1) infinite alternate!important;}
+.bloop-2d-host.bloop-object-attached[data-bloop-object-kind="remote"]::after{content:"●   ●   ●";position:absolute;left:50%;bottom:12%;transform:translateX(-50%);font:700 9px sans-serif;letter-spacing:3px;color:#7d3d0c;white-space:nowrap;opacity:.7;}
+@keyframes bloop-remote-form{from{transform:translateY(2px) rotate(-2deg) scale(.96)}to{transform:translateY(-3px) rotate(2deg) scale(1.02)}}
