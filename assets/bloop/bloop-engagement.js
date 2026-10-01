@@ -11,7 +11,7 @@ function injectStyles(){
  #bloop-quest b{color:#ffd59e}.bq-dot{width:7px;height:7px;border-radius:50%;background:#6ee7b7;box-shadow:0 0 8px #6ee7b7}
  #bloop-quest.done{border-color:rgba(110,231,183,.34);color:#d9fff0;animation:bq-pop .55s cubic-bezier(.2,.9,.2,1)}
  @keyframes bq-pop{50%{transform:scale(1.06)}}
- #bloop-share{position:fixed;right:18px;bottom:calc(env(safe-area-inset-bottom,0px) + 146px);z-index:11;display:none;border:1px solid rgba(255,255,255,.12);background:rgba(20,16,28,.82);color:#fff2df;border-radius:999px;padding:9px 13px;font:700 12px 'Space Grotesk',sans-serif;backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(0,0,0,.25);cursor:pointer}
+ #bloop-share{position:fixed;right:18px;top:calc(env(safe-area-inset-top,0px) + 116px);right:18px;bottom:auto;z-index:11;display:none;border:1px solid rgba(255,255,255,.12);background:rgba(20,16,28,.82);color:#fff2df;border-radius:999px;padding:9px 13px;font:700 12px 'Space Grotesk',sans-serif;backdrop-filter:blur(8px);box-shadow:0 8px 24px rgba(0,0,0,.25);cursor:pointer}
  #bloop-share.show{display:block;animation:bq-pop .45s cubic-bezier(.2,.9,.2,1)}
  #bloop-share:active{transform:scale(.94)}
  #bloop-share[disabled]{opacity:.55}
@@ -26,7 +26,7 @@ function injectStyles(){
 }
 function makeUI(){
  injectStyles();
- if(!document.getElementById("bloop-quest")){const q=document.createElement("div");q.id="bloop-quest";q.innerHTML='<span class="bq-dot"></span><span>Today: <b id="bq-count">0/3</b> new discoveries</span>';document.body.appendChild(q)}
+ if(!document.getElementById("bloop-quest")){const q=document.createElement("div");q.id="bloop-quest";q.innerHTML='<span class="bq-dot"></span><span>Today: <b id="bq-count">0/3</b> discoveries</span>';document.body.appendChild(q)}
  if(!document.getElementById("bloop-share")){const b=document.createElement("button");b.id="bloop-share";b.type="button";b.textContent="📸 Share Bloop";document.body.appendChild(b);b.addEventListener("click",shareMoment)}
  if(!document.getElementById("bloop-onboarding")){const o=document.createElement("div");o.id="bloop-onboarding";o.innerHTML='<strong>Let’s see what Bloop does 👀</strong><span>Scan something nearby. Then try a cup, bottle, laptop, mouse or TV.</span><br><button type="button">Got it</button>';document.body.appendChild(o);o.querySelector("button").onclick=()=>{o.classList.remove("show");try{localStorage.setItem("bloop-onboarded","1")}catch(_){}};try{if(!localStorage.getItem("bloop-onboarded"))setTimeout(()=>o.classList.add("show"),900)}catch(_){}}
  updateQuest();
