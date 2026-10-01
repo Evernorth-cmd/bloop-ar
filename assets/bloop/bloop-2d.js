@@ -5,7 +5,7 @@ const STATES=Object.freeze({
 });
 function makeCharacter(){
  const el=document.createElement("div"); el.className="bloop-live-character";
- el.innerHTML='<div class="bloop-shadow"></div><div class="bloop-speed-spark spark-a"></div><div class="bloop-speed-spark spark-b"></div><div class="bloop-limb bloop-arm bloop-arm-l"></div><div class="bloop-limb bloop-arm bloop-arm-r"></div><div class="bloop-body"><i class="bloop-gloss"></i><i class="bloop-body-shine"></i><div class="bloop-tuft"></div><div class="bloop-brow brow-l"></div><div class="bloop-brow brow-r"></div><div class="bloop-eye eye-l"><i></i><b></b></div><div class="bloop-eye eye-r"><i></i><b></b></div><div class="bloop-cheek cheek-l"></div><div class="bloop-cheek cheek-r"></div><div class="bloop-mouth"><span></span></div></div><div class="bloop-limb bloop-foot foot-l"></div><div class="bloop-limb bloop-foot foot-r"></div>';
+ el.innerHTML='<div class="bloop-shadow"></div><div class="bloop-speed-spark spark-a"></div><div class="bloop-speed-spark spark-b"></div><div class="bloop-limb bloop-arm bloop-arm-l"></div><div class="bloop-limb bloop-arm bloop-arm-r"></div><div class="bloop-body"><i class="bloop-gloss"></i><i class="bloop-body-shine"></i><div class="bloop-tuft"></div><div class="bloop-brow brow-l"></div><div class="bloop-brow brow-r"></div><div class="bloop-eye eye-l"><i></i><b></b></div><div class="bloop-eye eye-r"><i></i><b></b></div><div class="bloop-cheek cheek-l"></div><div class="bloop-cheek cheek-r"></div><div class="bloop-mouth"><span></span></div><div class="bloop-belly"></div></div><div class="bloop-limb bloop-foot foot-l"></div><div class="bloop-limb bloop-foot foot-r"></div><div class="bloop-dust"></div></div>';
  return el;
 }
 class Bloop2D{
