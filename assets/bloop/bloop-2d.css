@@ -276,3 +276,9 @@
 @media(prefers-reduced-motion:reduce){
  .bloop-2d-sprite,.bloop-live-character,.bloop-eye,.bloop-shadow{animation:none!important}
 }
+
+/* V5 — canvas-rendered Bloop. This replaces the flat DOM/SVG look with a continuously animated pixel-rendered character. */
+.bloop-canvas-character{width:100%!important;height:100%!important;display:block!important;position:relative!important;}
+.bloop-canvas{width:100%!important;height:100%!important;display:block!important;overflow:visible;filter:drop-shadow(0 8px 9px rgba(35,10,0,.20));}
+.bloop-2d-host{width:clamp(126px,32vw,148px)!important;height:clamp(126px,32vw,148px)!important;}
+@media(max-width:430px){.bloop-2d-host{width:132px!important;height:132px!important}.bloop-2d-host.bloop-object-attached{width:min(138px,34vw)!important;height:min(138px,34vw)!important}.bloop-2d-host[data-bloop-object-kind="remote"]{width:138px!important;height:160px!important}}
